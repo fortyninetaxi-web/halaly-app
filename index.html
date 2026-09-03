@@ -451,26 +451,27 @@
         window.scrollTo(0, 0);
     }
 
-    // Send Order to LINE Chat
     function sendOrderToLINE(menuName, price) {
-        if (!liff.isLoggedIn()) {
-            liff.login();
-            return;
-        }
-
-        liff.sendMessages([
-            {
-                type: 'text',
-                text: `🛒 **รายการสั่งซื้อใหม่จาก HALALY**\n- เมนู: ${menuName}\n- ราคา: ${price} บาท\n\nขอบคุณที่สั่งอาหารกับเราครับ!`
-            }
-        ]).then(() => {
-            alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้วครับ!');
-            liff.closeWindow();
-        }).catch((err) => {
-            console.error('Error sending message:', err);
-            alert('โปรดเปิดใช้งานผ่านลิงก์ LIFF ในแอป LINE เพื่อส่งข้อความสั่งซื้อ');
-        });
+    // เช็กว่าเปิดอยู่ในแอป LINE หรือไม่
+    if (!liff.isInClient()) {
+        alert(`สั่งซื้อ ${menuName} ราคา ${price} บาท เรียบร้อย!\n(สำหรับการเปิดผ่านเว็บเบราว์เซอร์ในคอมพิวเตอร์)`);
+        return;
     }
+
+    // กรณีเปิดในแอป LINE บนมือถือ
+    liff.sendMessages([
+        {
+            type: 'text',
+            text: `🛒 **รายการสั่งซื้อใหม่จาก HALALY**\n- เมนู: ${menuName}\n- ราคา: ${price} บาท\n\nขอบคุณที่สั่งอาหารกับเราครับ!`
+        }
+    ]).then(() => {
+        alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้วครับ!');
+        liff.closeWindow();
+    }).catch((err) => {
+        console.error('Error sending message:', err);
+        alert('เกิดข้อผิดพลาดในการส่งข้อความ');
+    });
+}
 </script>
 
 </body>
