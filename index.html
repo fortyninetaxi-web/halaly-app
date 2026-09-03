@@ -441,15 +441,7 @@
 </div>
 
 <script>
-    function switchPage(pageId) {
-        document.querySelectorAll('.page-view').forEach(view => {
-            view.classList.remove('active');
-        });
-        document.getElementById(pageId).classList.add('active');
-        window.scrollTo(0, 0);
-    }
-</script>
-// ฟังก์ชันส่งออเดอร์เข้า LINE แชททันที
+    // ฟังก์ชันส่งออเดอร์เข้า LINE แชททันที
 function sendOrderToLINE(menuName, price) {
     if (!liff.isLoggedIn()) {
         liff.login();
@@ -469,5 +461,7 @@ function sendOrderToLINE(menuName, price) {
         alert('เกิดข้อผิดพลาดในการส่งออเดอร์');
     });
 }
+</script>
+
 </body>
 </html>
