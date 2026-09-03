@@ -452,13 +452,19 @@
     }
 
     function sendOrderToLINE(menuName, price) {
-    // เช็กว่าเปิดอยู่ในแอป LINE หรือไม่
+    // 1. ถ้าไม่ได้เปิดในแอป LINE ให้สั่งเปิดแอป LINE ด้วย LIFF URL ทันที
     if (!liff.isInClient()) {
-        alert(`สั่งซื้อ ${menuName} ราคา ${price} บาท เรียบร้อย!\n(สำหรับการเปิดผ่านเว็บเบราว์เซอร์ในคอมพิวเตอร์)`);
+        window.location.href = "https://liff.line.me/2011404606-uxwIjCJT";
         return;
     }
 
-    // กรณีเปิดในแอป LINE บนมือถือ
+    // 2. ถ้าอยู่ในแอป LINE แต่ยังไม่ได้ Login ให้ Login ก่อน
+    if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+    }
+
+    // 3. ส่งข้อความออเดอร์เข้าแชท LINE
     liff.sendMessages([
         {
             type: 'text',
@@ -469,7 +475,7 @@
         liff.closeWindow();
     }).catch((err) => {
         console.error('Error sending message:', err);
-        alert('เกิดข้อผิดพลาดในการส่งข้อความ');
+        alert('เกิดข้อผิดพลาดในการส่งข้อความ: ' + err.message);
     });
 }
 </script>
