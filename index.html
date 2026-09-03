@@ -454,70 +454,78 @@
     }
 
     // Send Order Function
-    function sendOrderToLINE(menuName, price) {
-        if (typeof liff !== 'undefined' && liff.isInClient()) {
-            const flexReceipt = {
-                type: "flex",
-                altText: `ใบเสร็จสั่งซื้อ: ${menuName}`,
-                contents: {
-                    type: "bubble",
-                    header: {
-                        type: "box",
-                        layout: "vertical",
-                        contents: [
-                            { type: "text", text: "HALALY FOOD", weight: "bold", color: "#00B14F", size: "sm" },
-                            { type: "text", text: "ใบเสร็จสั่งซื้อ / RECEIPT", weight: "bold", size: "xl", margin: "xs" }
-                        ]
-                    },
-                    body: {
-                        type: "box",
-                        layout: "vertical",
-                        contents: [
-                            { type: "separator", color: "#EEEEEE" },
-                            {
-                                type: "box",
-                                layout: "horizontal",
-                                margin: "md",
-                                contents: [
-                                    { type: "text", text: menuName, weight: "bold", size: "md", flex: 3 },
-                                    { type: "text", text: `฿${price}`, weight: "bold", size: "md", align: "end", flex: 1, color: "#FF5722" }
-                                ]
-                            },
-                            { type: "separator", margin: "md", color: "#EEEEEE" },
-                            {
-                                type: "box",
-                                layout: "horizontal",
-                                margin: "md",
-                                contents: [
-                                    { type: "text", text: "ราคารวมทั้งสิ้น", size: "sm", color: "#888888" },
-                                    { type: "text", text: `฿${price}`, weight: "bold", size: "lg", align: "end", color: "#00B14F" }
-                                ]
-                            }
-                        ]
-                    },
-                    footer: {
-                        type: "box",
-                        layout: "vertical",
-                        contents: [
-                            { type: "text", text: "ขอบคุณที่อุดหนุนอาหารฮาลาลกับเราครับ! 💚", size: "xs", color: "#AAAAAA", align: "center" }
-                        ]
-                    }
+    // ฟังก์ชันส่งออเดอร์รูปแบบ Flex Message โดยใช้ shareTargetPicker (ชัวร์ 100%)
+function sendOrderToLINE(menuName, price) {
+    if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
+        const flexReceipt = {
+            type: "flex",
+            altText: `ใบเสร็จสั่งซื้อ: ${menuName}`,
+            contents: {
+                type: "bubble",
+                header: {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                        { type: "text", text: "HALALY FOOD", weight: "bold", color: "#00B14F", size: "sm" },
+                        { type: "text", text: "ใบเสร็จสั่งซื้อ / RECEIPT", weight: "bold", size: "xl", margin: "xs" }
+                    ]
+                },
+                body: {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                        { type: "separator", color: "#EEEEEE" },
+                        {
+                            type: "box",
+                            layout: "horizontal",
+                            margin: "md",
+                            contents: [
+                                { type: "text", text: menuName, weight: "bold", size: "md", flex: 3 },
+                                { type: "text", text: `฿${price}`, weight: "bold", size: "md", align: "end", flex: 1, color: "#FF5722" }
+                            ]
+                        },
+                        { type: "separator", margin: "md", color: "#EEEEEE" },
+                        {
+                            type: "box",
+                            layout: "horizontal",
+                            margin: "md",
+                            contents: [
+                                { type: "text", text: "ราคารวมทั้งสิ้น", size: "sm", color: "#888888" },
+                                { type: "text", text: `฿${price}`, weight: "bold", size: "lg", align: "end", color: "#00B14F" }
+                            ]
+                        }
+                    ]
+                },
+                footer: {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                        { type: "text", text: "ขอบคุณที่อุดหนุนอาหารฮาลาลกับเราครับ! 💚", size: "xs", color: "#AAAAAA", align: "center" }
+                    ]
                 }
-            };
+            }
+        };
 
-            liff.sendMessages([flexReceipt])
-                .then(() => {
-                    alert('ส่งใบเสร็จสั่งซื้อเข้าแชทเรียบร้อยแล้วครับ!');
-                    liff.closeWindow();
+        // ตรวจสอบว่ารองรับ Target Picker หรือไม่
+        if (liff.isApiAvailable('shareTargetPicker')) {
+            liff.shareTargetPicker([flexReceipt])
+                .then((res) => {
+                    if (res) {
+                        alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
+                        liff.closeWindow();
+                    }
                 })
                 .catch((err) => {
-                    console.error('Error sending Flex Message:', err);
-                    alert('เกิดข้อผิดพลาดในการส่งข้อความ: ' + err.message);
+                    console.error('Error sharing target picker:', err);
+                    alert('เกิดข้อผิดพลาด: ' + err.message);
                 });
         } else {
-            alert(`สั่งซื้อ ${menuName} ราคา ${price} บาท เรียบร้อยแล้วครับ!`);
+            alert('อุปกรณ์นี้ไม่รองรับการส่งข้อความตรง');
         }
+    } else {
+        alert(`สั่งซื้อ ${menuName} ราคา ${price} บาท เรียบร้อยแล้วครับ!`);
     }
+}
 </script>
 
 </body>
