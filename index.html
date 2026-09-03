@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HALALY Super App</title>
-    <!-- Font & Icons -->
+    <!-- Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- LINE LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     
     <style>
         :root {
@@ -21,7 +23,6 @@
             --radius-lg: 16px;
             --radius-md: 12px;
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-            --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
         }
 
         * {
@@ -49,7 +50,7 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
-        /* --- Header Top --- */
+        /* --- Header --- */
         .header-top {
             background: linear-gradient(135deg, var(--primary) 0%, #00C853 100%);
             padding: 16px 16px 20px 16px;
@@ -114,7 +115,7 @@
             color: var(--text-main);
         }
 
-        /* --- View Management --- */
+        /* --- Views --- */
         .page-view {
             display: none;
             padding: 16px;
@@ -130,7 +131,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Super App Services Grid --- */
+        /* --- Services Grid --- */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -147,9 +148,6 @@
             align-items: center;
             box-shadow: var(--shadow-sm);
             cursor: pointer;
-            transition: transform 0.15s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .service-card:active {
@@ -159,7 +157,6 @@
         .service-info h3 {
             font-size: 1.05rem;
             font-weight: 600;
-            margin-bottom: 2px;
         }
 
         .service-info p {
@@ -183,28 +180,20 @@
             color: var(--primary);
         }
 
-        /* Banner Carousel */
+        /* --- Banner --- */
         .banner-slider {
             width: 100%;
             border-radius: var(--radius-lg);
             overflow: hidden;
             margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
             background: linear-gradient(135deg, #FF5722 0%, #FF9800 100%);
             color: white;
             padding: 20px;
-            position: relative;
         }
 
         .banner-content h2 {
             font-size: 1.4rem;
             font-weight: 700;
-        }
-
-        .banner-content p {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            margin-top: 4px;
         }
 
         .code-tag {
@@ -218,7 +207,7 @@
             margin-top: 10px;
         }
 
-        /* Section Titles */
+        /* --- Food Section --- */
         .section-title {
             font-size: 1.1rem;
             font-weight: 600;
@@ -228,7 +217,6 @@
             justify-content: space-between;
         }
 
-        /* --- Food Menu View --- */
         .food-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -270,14 +258,14 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 6px;
+            padding: 8px;
             border-radius: 8px;
             margin-top: 8px;
             font-weight: 500;
             cursor: pointer;
         }
 
-        /* --- Bottom Navigation --- */
+        /* --- Bottom Nav --- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -288,7 +276,6 @@
             justify-content: space-around;
             padding: 8px 0 12px 0;
             border-top: 1px solid #EEEEEE;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
             z-index: 1000;
         }
 
@@ -298,7 +285,6 @@
             align-items: center;
             color: var(--text-sub);
             font-size: 0.75rem;
-            text-decoration: none;
             border: none;
             background: none;
             cursor: pointer;
@@ -324,7 +310,7 @@
         <div class="location-bar">
             <button class="location-btn">
                 <i class="fa-solid fa-location-dot"></i>
-                <span id="location-text">43/9 ซอยหะยีอาหมัด...</span>
+                <span id="user-display-name">43/9 ซอยหะยีอาหมัด...</span>
                 <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i>
             </button>
             <button class="icon-btn">
@@ -337,7 +323,7 @@
         </div>
     </div>
 
-    <!-- HOME VIEW (Super App Grid) -->
+    <!-- HOME VIEW -->
     <div id="home-view" class="page-view active">
         <div class="services-grid">
             <div class="service-card" onclick="switchPage('food-view')">
@@ -376,22 +362,20 @@
             </div>
         </div>
 
-        <!-- Promo Banner -->
         <div class="banner-slider">
             <div class="banner-content">
-                <p style="font-size: 0.8rem; font-weight: 500;">ร้านโค้ดเดือด</p>
+                <p style="font-size: 0.8rem;">ร้านโค้ดเดือด</p>
                 <h2>ลดสูงสุด 100.-</h2>
                 <span class="code-tag">ใส่โค้ด AROI</span>
             </div>
         </div>
 
-        <!-- Hot Deals -->
         <div class="section-title">
             <span>รวมดีลคุ้ม! ถูกที่สุดทุกวัน*</span>
         </div>
     </div>
 
-    <!-- FOOD MENU VIEW -->
+    <!-- FOOD VIEW -->
     <div id="food-view" class="page-view">
         <div class="section-title">
             <span><i class="fa-solid fa-fire" style="color: var(--secondary);"></i> เมนูฮาลาลยอดนิยม</span>
@@ -404,22 +388,22 @@
                 <div class="food-details">
                     <div class="food-title">พิซซ่าฮาลาลถาดใหญ่</div>
                     <div class="food-price">฿199</div>
-                    <button class="add-btn" onclick="alert('เพิ่มลงตะกร้าเรียบร้อย!')">สั่งซื้อ</button>
+                    <button class="add-btn" onclick="sendOrderToLINE('พิซซ่าฮาลาลถาดใหญ่', 199)">สั่งซื้อเลย</button>
                 </div>
             </div>
 
             <div class="food-card">
                 <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300" class="food-img" alt="Burger">
                 <div class="food-details">
-                    <div class="food-title">เบอร์เกอร์เนื้อเนื้อแน่น</div>
+                    <div class="food-title">เบอร์เกอร์เนื้อแน่น</div>
                     <div class="food-price">฿89</div>
-                    <button class="add-btn" onclick="alert('เพิ่มลงตะกร้าเรียบร้อย!')">สั่งซื้อ</button>
+                    <button class="add-btn" onclick="sendOrderToLINE('เบอร์เกอร์เนื้อแน่น', 89)">สั่งซื้อเลย</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Nav -->
     <div class="bottom-nav">
         <button class="nav-item active" onclick="switchPage('home-view')">
             <i class="fa-solid fa-house"></i>
@@ -441,26 +425,52 @@
 </div>
 
 <script>
-    // ฟังก์ชันส่งออเดอร์เข้า LINE แชททันที
-function sendOrderToLINE(menuName, price) {
-    if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
+    const myLiffId = "2011404606-uxwIjCJT";
+
+    // Initialize LINE LIFF
+    document.addEventListener('DOMContentLoaded', function () {
+        liff.init({ liffId: myLiffId })
+            .then(() => {
+                if (liff.isLoggedIn()) {
+                    liff.getProfile().then(profile => {
+                        document.getElementById('user-display-name').innerText = `คุณ ${profile.displayName}`;
+                    });
+                }
+            })
+            .catch((err) => {
+                console.error('LIFF Init Failed:', err);
+            });
+    });
+
+    // Switch View
+    function switchPage(pageId) {
+        document.querySelectorAll('.page-view').forEach(view => {
+            view.classList.remove('active');
+        });
+        document.getElementById(pageId).classList.add('active');
+        window.scrollTo(0, 0);
     }
 
-    liff.sendMessages([
-        {
-            type: 'text',
-            text: `🛒 **รายการสั่งซื้อใหม่จาก HALALY**\n- เมนู: ${menuName}\n- ราคา: ${price} บาท\n\nขอบคุณที่ใช้บริการครับ!`
+    // Send Order to LINE Chat
+    function sendOrderToLINE(menuName, price) {
+        if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
         }
-    ]).then(() => {
-        alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
-        liff.closeWindow(); // ปิดหน้า LIFF อัตโนมัติหลังสั่งเสร็จ
-    }).catch((err) => {
-        console.error('Error sending message:', err);
-        alert('เกิดข้อผิดพลาดในการส่งออเดอร์');
-    });
-}
+
+        liff.sendMessages([
+            {
+                type: 'text',
+                text: `🛒 **รายการสั่งซื้อใหม่จาก HALALY**\n- เมนู: ${menuName}\n- ราคา: ${price} บาท\n\nขอบคุณที่สั่งอาหารกับเราครับ!`
+            }
+        ]).then(() => {
+            alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้วครับ!');
+            liff.closeWindow();
+        }).catch((err) => {
+            console.error('Error sending message:', err);
+            alert('โปรดเปิดใช้งานผ่านลิงก์ LIFF ในแอป LINE เพื่อส่งข้อความสั่งซื้อ');
+        });
+    }
 </script>
 
 </body>
