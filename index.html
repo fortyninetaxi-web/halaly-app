@@ -46,7 +46,7 @@
             max-width: 480px;
             background-color: var(--bg-gray);
             position: relative;
-            padding-bottom: 90px;
+            padding-bottom: 110px;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
@@ -84,37 +84,6 @@
             cursor: pointer;
         }
 
-        .icon-btn {
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .search-box {
-            background: white;
-            border-radius: 25px;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .search-box input {
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 0.9rem;
-            color: var(--text-main);
-        }
-
         /* --- Views --- */
         .page-view {
             display: none;
@@ -131,83 +100,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Services Grid --- */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .service-card {
-            background: var(--card-white);
-            border-radius: var(--radius-lg);
-            padding: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow-sm);
-            cursor: pointer;
-        }
-
-        .service-card:active {
-            transform: scale(0.97);
-        }
-
-        .service-info h3 {
-            font-size: 1.05rem;
-            font-weight: 600;
-        }
-
-        .service-info p {
-            font-size: 0.75rem;
-            color: var(--text-sub);
-        }
-
-        .badge-tag {
-            display: inline-block;
-            background: #FFEBEE;
-            color: var(--secondary);
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 6px;
-            margin-top: 4px;
-        }
-
-        .service-icon {
-            font-size: 2rem;
-            color: var(--primary);
-        }
-
-        /* --- Banner --- */
-        .banner-slider {
-            width: 100%;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #FF5722 0%, #FF9800 100%);
-            color: white;
-            padding: 20px;
-        }
-
-        .banner-content h2 {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .code-tag {
-            display: inline-block;
-            background: white;
-            color: var(--secondary);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            margin-top: 10px;
-        }
-
-        /* --- Food Section --- */
         .section-title {
             font-size: 1.1rem;
             font-weight: 600;
@@ -217,6 +109,7 @@
             justify-content: space-between;
         }
 
+        /* --- Food Grid --- */
         .food-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -228,6 +121,9 @@
             border-radius: var(--radius-md);
             overflow: hidden;
             box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .food-img {
@@ -239,6 +135,10 @@
 
         .food-details {
             padding: 10px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
         }
 
         .food-title {
@@ -262,6 +162,79 @@
             border-radius: 8px;
             margin-top: 8px;
             font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* --- Cart System UI --- */
+        .cart-bar {
+            position: fixed;
+            bottom: 60px;
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            padding: 12px 16px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 999;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        .cart-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cart-badge {
+            background: var(--secondary);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkout-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .cart-item {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid #DDD;
+            background: white;
+            font-weight: bold;
             cursor: pointer;
         }
 
@@ -291,11 +264,6 @@
             width: 25%;
         }
 
-        .nav-item i {
-            font-size: 1.25rem;
-            margin-bottom: 2px;
-        }
-
         .nav-item.active {
             color: var(--primary);
             font-weight: 600;
@@ -311,121 +279,84 @@
             <button class="location-btn">
                 <i class="fa-solid fa-location-dot"></i>
                 <span id="user-display-name">ยินดีต้อนรับสู่ HALALY</span>
-                <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i>
             </button>
-            <button class="icon-btn">
-                <i class="fa-regular fa-heart"></i>
-            </button>
-        </div>
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass" style="color: var(--text-sub);"></i>
-            <input type="text" placeholder="ค้นหาร้านอาหาร, สินค้า หรือบริการ...">
         </div>
     </div>
 
-    <!-- HOME VIEW -->
-    <div id="home-view" class="page-view active">
-        <div class="services-grid">
-            <div class="service-card" onclick="switchPage('food-view')">
-                <div class="service-info">
-                    <h3>สั่งอาหาร</h3>
-                    <p>ฮาลาลอร่อยส่งไว</p>
-                    <span class="badge-tag">ลด ฿100*</span>
-                </div>
-                <div class="service-icon"><i class="fa-solid fa-utensils"></i></div>
-            </div>
-
-            <div class="service-card">
-                <div class="service-info">
-                    <h3>สั่งของ</h3>
-                    <p>ของสด ครบครัน</p>
-                    <span class="badge-tag">ส่งฟรี*</span>
-                </div>
-                <div class="service-icon"><i class="fa-solid fa-basket-shopping"></i></div>
-            </div>
-
-            <div class="service-card">
-                <div class="service-info">
-                    <h3>เรียกรถ</h3>
-                    <p>เดินทางปลอดภัย</p>
-                    <span class="badge-tag">ลด ฿100*</span>
-                </div>
-                <div class="service-icon"><i class="fa-solid fa-motorcycle"></i></div>
-            </div>
-
-            <div class="service-card">
-                <div class="service-info">
-                    <h3>เมสเซนเจอร์</h3>
-                    <p>ส่งพัสดุด่วน</p>
-                </div>
-                <div class="service-icon"><i class="fa-solid fa-box"></i></div>
-            </div>
-        </div>
-
-        <div class="banner-slider">
-            <div class="banner-content">
-                <p style="font-size: 0.8rem;">ร้านโค้ดเดือด</p>
-                <h2>ลดสูงสุด 100.-</h2>
-                <span class="code-tag">ใส่โค้ด AROI</span>
-            </div>
-        </div>
-
+    <!-- FOOD MENU VIEW -->
+    <div id="food-view" class="page-view active">
         <div class="section-title">
-            <span>รวมดีลคุ้ม! ถูกที่สุดทุกวัน*</span>
-        </div>
-    </div>
-
-    <!-- FOOD VIEW -->
-    <div id="food-view" class="page-view">
-        <div class="section-title">
-            <span><i class="fa-solid fa-fire" style="color: var(--secondary);"></i> เมนูฮาลาลยอดนิยม</span>
-            <button onclick="switchPage('home-view')" style="border:none; background:none; color:var(--primary); font-size:0.85rem; font-weight:600;">ย้อนกลับ</button>
+            <span><i class="fa-solid fa-fire" style="color: var(--secondary);"></i> เมนูฮาลาลแนะนำ</span>
         </div>
 
         <div class="food-grid">
             <div class="food-card">
                 <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300" class="food-img" alt="Pizza">
                 <div class="food-details">
-                    <div class="food-title">พิซซ่าฮาลาลถาดใหญ่</div>
-                    <div class="food-price">฿199</div>
-                    <button class="add-btn" onclick="sendOrderToLINE('พิซซ่าฮาลาลถาดใหญ่', 199)">สั่งซื้อเลย</button>
+                    <div>
+                        <div class="food-title">พิซซ่าฮาลาลถาดใหญ่</div>
+                        <div class="food-price">฿199</div>
+                    </div>
+                    <button class="add-btn" onclick="addToCart('พิซซ่าฮาลาลถาดใหญ่', 199)">+ เพิ่มลงตะกร้า</button>
                 </div>
             </div>
 
             <div class="food-card">
                 <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300" class="food-img" alt="Burger">
                 <div class="food-details">
-                    <div class="food-title">เบอร์เกอร์เนื้อแน่น</div>
-                    <div class="food-price">฿89</div>
-                    <button class="add-btn" onclick="sendOrderToLINE('เบอร์เกอร์เนื้อแน่น', 89)">สั่งซื้อเลย</button>
+                    <div>
+                        <div class="food-title">เบอร์เกอร์เนื้อแน่น</div>
+                        <div class="food-price">฿89</div>
+                    </div>
+                    <button class="add-btn" onclick="addToCart('เบอร์เกอร์เนื้อแน่น', 89)">+ เพิ่มลงตะกร้า</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- CART VIEW -->
+    <div id="cart-view" class="page-view">
+        <div class="section-title">
+            <span><i class="fa-solid fa-cart-shopping"></i> ตะกร้าสินค้าของคุณ</span>
+            <button onclick="switchPage('food-view')" style="border:none; background:none; color:var(--primary); font-size:0.85rem; font-weight:600;">+ เพิ่มรายการ</button>
+        </div>
+        <div id="cart-items-list">
+            <!-- รายการสินค้าจะมาแสดงที่นี่ -->
+        </div>
+    </div>
+
+    <!-- CART FLOATING BAR -->
+    <div id="cart-bar" class="cart-bar" style="display: none;">
+        <div class="cart-info">
+            <div id="cart-count" class="cart-badge">0</div>
+            <div>
+                <div style="font-size: 0.75rem; color: var(--text-sub);">ราคารวม</div>
+                <div id="cart-total" style="font-weight: 700; color: var(--primary);">฿0</div>
+            </div>
+        </div>
+        <button class="checkout-btn" onclick="switchPage('cart-view')">ดูตะกร้าสินค้า</button>
+    </div>
+
     <!-- Bottom Nav -->
     <div class="bottom-nav">
-        <button class="nav-item active" onclick="switchPage('home-view')">
-            <i class="fa-solid fa-house"></i>
-            <span>หน้าแรก</span>
+        <button class="nav-item active" onclick="switchPage('food-view')">
+            <i class="fa-solid fa-utensils"></i>
+            <span>เมนู</span>
         </button>
-        <button class="nav-item" onclick="switchPage('food-view')">
-            <i class="fa-solid fa-receipt"></i>
-            <span>คำสั่งซื้อ</span>
+        <button class="nav-item" onclick="switchPage('cart-view')">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span>ตะกร้า</span>
         </button>
-        <button class="nav-item">
-            <i class="fa-regular fa-comment-dots"></i>
-            <span>ข้อความ</span>
-        </button>
-        <button class="nav-item">
-            <i class="fa-solid fa-ellipsis"></i>
-            <span>อื่นๆ</span>
+        <button class="nav-item" onclick="checkoutOrder()">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>ส่งออเดอร์</span>
         </button>
     </div>
 </div>
 
 <script>
     const myLiffId = "2011404606-uxwIjCJT";
+    let cart = [];
 
     // Initialize LINE LIFF
     document.addEventListener('DOMContentLoaded', function () {
@@ -438,28 +369,98 @@
                         }).catch(e => console.log(e));
                     }
                 })
-                .catch((err) => {
-                    console.error('LIFF Init error:', err);
-                });
+                .catch((err) => console.error('LIFF Init error:', err));
         }
     });
 
+    // Add to Cart
+    function addToCart(name, price) {
+        const item = cart.find(i => i.name === name);
+        if (item) {
+            item.qty++;
+        } else {
+            cart.push({ name, price, qty: 1 });
+        }
+        updateCartUI();
+    }
+
+    // Change Quantity
+    function changeQty(name, amount) {
+        const item = cart.find(i => i.name === name);
+        if (item) {
+            item.qty += amount;
+            if (item.qty <= 0) {
+                cart = cart.filter(i => i.name !== name);
+            }
+        }
+        updateCartUI();
+    }
+
+    // Update Cart UI
+    function updateCartUI() {
+        const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+        document.getElementById('cart-count').innerText = totalItems;
+        document.getElementById('cart-total').innerText = `฿${totalPrice}`;
+
+        // Control Floating Bar
+        document.getElementById('cart-bar').style.display = totalItems > 0 ? 'flex' : 'none';
+
+        // Render Cart View
+        const cartList = document.getElementById('cart-items-list');
+        if (cart.length === 0) {
+            cartList.innerHTML = '<p style="text-align:center; color:var(--text-sub); margin-top:20px;">ไม่มีสินค้าในตะกร้า</p>';
+            return;
+        }
+
+        cartList.innerHTML = cart.map(item => `
+            <div class="cart-item">
+                <div>
+                    <div style="font-weight:600;">${item.name}</div>
+                    <div style="color:var(--primary); font-weight:700;">฿${item.price * item.qty}</div>
+                </div>
+                <div class="qty-control">
+                    <button class="qty-btn" onclick="changeQty('${item.name}', -1)">-</button>
+                    <span>${item.qty}</span>
+                    <button class="qty-btn" onclick="changeQty('${item.name}', 1)">+</button>
+                </div>
+            </div>
+        `).join('') + `
+            <button class="add-btn" style="margin-top:20px; padding:12px; font-size:1rem;" onclick="checkoutOrder()">ส่งรายการสั่งซื้อทั้งหมด (฿${totalPrice})</button>
+        `;
+    }
+
     // Switch View
     function switchPage(pageId) {
-        document.querySelectorAll('.page-view').forEach(view => {
-            view.classList.remove('active');
-        });
+        document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         window.scrollTo(0, 0);
     }
 
-    // Send Order Function
-    // ฟังก์ชันส่งออเดอร์รูปแบบ Flex Message โดยใช้ shareTargetPicker (ชัวร์ 100%)
-function sendOrderToLINE(menuName, price) {
-    if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
+    // Checkout & Send Flex Message
+    function checkoutOrder() {
+        if (cart.length === 0) {
+            alert('กรุณาเลือกสินค้าลงตะกร้าก่อนส่งสั่งซื้อครับ');
+            return;
+        }
+
+        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        
+        // สร้างรายการสินค้าสำหรับ Flex Message
+        const itemContents = cart.map(item => ({
+            type: "box",
+            layout: "horizontal",
+            margin: "sm",
+            contents: [
+                { type: "text", text: `${item.name} (x${item.qty})`, size: "sm", flex: 3 },
+                { type: "text", text: `฿${item.price * item.qty}`, size: "sm", align: "end", flex: 1, weight: "bold" }
+            ]
+        }));
+
         const flexReceipt = {
             type: "flex",
-            altText: `ใบเสร็จสั่งซื้อ: ${menuName}`,
+            altText: `ใบเสร็จสั่งซื้อรวม ฿${totalPrice}`,
             contents: {
                 type: "bubble",
                 header: {
@@ -475,15 +476,7 @@ function sendOrderToLINE(menuName, price) {
                     layout: "vertical",
                     contents: [
                         { type: "separator", color: "#EEEEEE" },
-                        {
-                            type: "box",
-                            layout: "horizontal",
-                            margin: "md",
-                            contents: [
-                                { type: "text", text: menuName, weight: "bold", size: "md", flex: 3 },
-                                { type: "text", text: `฿${price}`, weight: "bold", size: "md", align: "end", flex: 1, color: "#FF5722" }
-                            ]
-                        },
+                        ...itemContents,
                         { type: "separator", margin: "md", color: "#EEEEEE" },
                         {
                             type: "box",
@@ -491,7 +484,7 @@ function sendOrderToLINE(menuName, price) {
                             margin: "md",
                             contents: [
                                 { type: "text", text: "ราคารวมทั้งสิ้น", size: "sm", color: "#888888" },
-                                { type: "text", text: `฿${price}`, weight: "bold", size: "lg", align: "end", color: "#00B14F" }
+                                { type: "text", text: `฿${totalPrice}`, weight: "bold", size: "lg", align: "end", color: "#00B14F" }
                             ]
                         }
                     ]
@@ -506,26 +499,25 @@ function sendOrderToLINE(menuName, price) {
             }
         };
 
-        // ตรวจสอบว่ารองรับ Target Picker หรือไม่
-        if (liff.isApiAvailable('shareTargetPicker')) {
-            liff.shareTargetPicker([flexReceipt])
-                .then((res) => {
-                    if (res) {
-                        alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
-                        liff.closeWindow();
-                    }
-                })
-                .catch((err) => {
-                    console.error('Error sharing target picker:', err);
-                    alert('เกิดข้อผิดพลาด: ' + err.message);
-                });
+        if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
+            if (liff.isApiAvailable('shareTargetPicker')) {
+                liff.shareTargetPicker([flexReceipt])
+                    .then((res) => {
+                        if (res) {
+                            alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
+                            cart = [];
+                            updateCartUI();
+                            liff.closeWindow();
+                        }
+                    })
+                    .catch((err) => alert('เกิดข้อผิดพลาด: ' + err.message));
+            } else {
+                alert('อุปกรณ์นี้ไม่รองรับการส่งข้อความตรง');
+            }
         } else {
-            alert('อุปกรณ์นี้ไม่รองรับการส่งข้อความตรง');
+            alert(`สั่งซื้อรวม ฿${totalPrice} เรียบร้อยแล้วครับ!`);
         }
-    } else {
-        alert(`สั่งซื้อ ${menuName} ราคา ${price} บาท เรียบร้อยแล้วครับ!`);
     }
-}
 </script>
 
 </body>
