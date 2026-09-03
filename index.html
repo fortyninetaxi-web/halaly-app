@@ -427,7 +427,7 @@
 <script>
     const myLiffId = "2011404606-uxwIjCJT";
 
-    // Initialize LINE LIFF แบบไม่บังคับ Redirect
+    // Initialize LINE LIFF
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof liff !== 'undefined') {
             liff.init({ liffId: myLiffId })
@@ -453,7 +453,7 @@
         window.scrollTo(0, 0);
     }
 
-    // Send Order to LINE Chat
+    // Send Order Function
     function sendOrderToLINE(menuName, price) {
         if (typeof liff !== 'undefined' && liff.isInClient()) {
             const flexReceipt = {
