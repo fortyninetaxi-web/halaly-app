@@ -310,7 +310,7 @@
         <div class="location-bar">
             <button class="location-btn">
                 <i class="fa-solid fa-location-dot"></i>
-                <span id="user-display-name">43/9 ซอยหะยีอาหมัด...</span>
+                <span id="user-display-name">ยินดีต้อนรับสู่ HALALY</span>
                 <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i>
             </button>
             <button class="icon-btn">
@@ -427,19 +427,21 @@
 <script>
     const myLiffId = "2011404606-uxwIjCJT";
 
-    // Initialize LINE LIFF
+    // Initialize LINE LIFF แบบไม่บังคับ Redirect
     document.addEventListener('DOMContentLoaded', function () {
-        liff.init({ liffId: myLiffId })
-            .then(() => {
-                if (liff.isLoggedIn()) {
-                    liff.getProfile().then(profile => {
-                        document.getElementById('user-display-name').innerText = `คุณ ${profile.displayName}`;
-                    });
-                }
-            })
-            .catch((err) => {
-                console.error('LIFF Init Failed:', err);
-            });
+        if (typeof liff !== 'undefined') {
+            liff.init({ liffId: myLiffId })
+                .then(() => {
+                    if (liff.isLoggedIn()) {
+                        liff.getProfile().then(profile => {
+                            document.getElementById('user-display-name').innerText = `คุณ ${profile.displayName}`;
+                        }).catch(e => console.log(e));
+                    }
+                })
+                .catch((err) => {
+                    console.error('LIFF Init error:', err);
+                });
+        }
     });
 
     // Switch View
@@ -451,78 +453,71 @@
         window.scrollTo(0, 0);
     }
 
-    // ฟังก์ชันส่งออเดอร์รูปแบบ Flex Message ใบเสร็จสุดพรีเมียม
-function sendOrderToLINE(menuName, price) {
-    if (typeof liff !== 'undefined' && liff.isInClient()) {
-        if (!liff.isLoggedIn()) {
-            liff.login({ redirectUri: "https://halaly-app-liat.vercel.app/" });
-            return;
-        }
-
-        // โครงสร้าง Flex Message รูปแบบใบเสร็จ
-        const flexReceipt = {
-            type: "flex",
-            altText: `ใบเสร็จสั่งซื้อ: ${menuName}`,
-            contents: {
-                type: "bubble",
-                header: {
-                    type: "box",
-                    layout: "vertical",
-                    contents: [
-                        { type: "text", text: "HALALY FOOD", weight: "bold", color: "#00B14F", size: "sm" },
-                        { type: "text", text: "ใบเสร็จสั่งซื้อ / RECEIPT", weight: "bold", size: "xl", margin: "xs" }
-                    ]
-                },
-                body: {
-                    type: "box",
-                    layout: "vertical",
-                    contents: [
-                        { type: "separator", color: "#EEEEEE" },
-                        {
-                            type: "box",
-                            layout: "horizontal",
-                            margin: "md",
-                            contents: [
-                                { type: "text", text: menuName, weight: "bold", size: "md", flex: 3 },
-                                { type: "text", text: `฿${price}`, weight: "bold", size: "md", align: "end", flex: 1, color: "#FF5722" }
-                            ]
-                        },
-                        { type: "separator", margin: "md", color: "#EEEEEE" },
-                        {
-                            type: "box",
-                            layout: "horizontal",
-                            margin: "md",
-                            contents: [
-                                { type: "text", text: "ราคารวมทั้งสิ้น", size: "sm", color: "#888888" },
-                                { type: "text", text: `฿${price}`, weight: "bold", size: "lg", align: "end", color: "#00B14F" }
-                            ]
-                        }
-                    ]
-                },
-                footer: {
-                    type: "box",
-                    layout: "vertical",
-                    contents: [
-                        { type: "text", text: "ขอบคุณที่อุดหนุนอาหารฮาลาลกับเราครับ! 💚", size: "xs", color: "#AAAAAA", align: "center" }
-                    ]
+    // Send Order to LINE Chat
+    function sendOrderToLINE(menuName, price) {
+        if (typeof liff !== 'undefined' && liff.isInClient()) {
+            const flexReceipt = {
+                type: "flex",
+                altText: `ใบเสร็จสั่งซื้อ: ${menuName}`,
+                contents: {
+                    type: "bubble",
+                    header: {
+                        type: "box",
+                        layout: "vertical",
+                        contents: [
+                            { type: "text", text: "HALALY FOOD", weight: "bold", color: "#00B14F", size: "sm" },
+                            { type: "text", text: "ใบเสร็จสั่งซื้อ / RECEIPT", weight: "bold", size: "xl", margin: "xs" }
+                        ]
+                    },
+                    body: {
+                        type: "box",
+                        layout: "vertical",
+                        contents: [
+                            { type: "separator", color: "#EEEEEE" },
+                            {
+                                type: "box",
+                                layout: "horizontal",
+                                margin: "md",
+                                contents: [
+                                    { type: "text", text: menuName, weight: "bold", size: "md", flex: 3 },
+                                    { type: "text", text: `฿${price}`, weight: "bold", size: "md", align: "end", flex: 1, color: "#FF5722" }
+                                ]
+                            },
+                            { type: "separator", margin: "md", color: "#EEEEEE" },
+                            {
+                                type: "box",
+                                layout: "horizontal",
+                                margin: "md",
+                                contents: [
+                                    { type: "text", text: "ราคารวมทั้งสิ้น", size: "sm", color: "#888888" },
+                                    { type: "text", text: `฿${price}`, weight: "bold", size: "lg", align: "end", color: "#00B14F" }
+                                ]
+                            }
+                        ]
+                    },
+                    footer: {
+                        type: "box",
+                        layout: "vertical",
+                        contents: [
+                            { type: "text", text: "ขอบคุณที่อุดหนุนอาหารฮาลาลกับเราครับ! 💚", size: "xs", color: "#AAAAAA", align: "center" }
+                        ]
+                    }
                 }
-            }
-        };
+            };
 
-        // ส่ง Flex Message เข้าแชท LINE
-        liff.sendMessages([flexReceipt])
-            .then(() => {
-                alert('ส่งใบเสร็จสั่งซื้อเข้าแชทเรียบร้อยแล้วครับ!');
-                liff.closeWindow();
-            })
-            .catch((err) => {
-                console.error('Error sending Flex Message:', err);
-                alert('เกิดข้อผิดพลาดในการส่งข้อความ: ' + err.message);
-            });
-    } else {
-        alert(`สั่งซื้อ ${menuName} ราคา ${price} บาท เรียบร้อยแล้วครับ!`);
+            liff.sendMessages([flexReceipt])
+                .then(() => {
+                    alert('ส่งใบเสร็จสั่งซื้อเข้าแชทเรียบร้อยแล้วครับ!');
+                    liff.closeWindow();
+                })
+                .catch((err) => {
+                    console.error('Error sending Flex Message:', err);
+                    alert('เกิดข้อผิดพลาดในการส่งข้อความ: ' + err.message);
+                });
+        } else {
+            alert(`สั่งซื้อ ${menuName} ราคา ${price} บาท เรียบร้อยแล้วครับ!`);
+        }
     }
-}
 </script>
 
 </body>
