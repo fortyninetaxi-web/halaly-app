@@ -449,6 +449,25 @@
         window.scrollTo(0, 0);
     }
 </script>
+// ฟังก์ชันส่งออเดอร์เข้า LINE แชททันที
+function sendOrderToLINE(menuName, price) {
+    if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+    }
 
+    liff.sendMessages([
+        {
+            type: 'text',
+            text: `🛒 **รายการสั่งซื้อใหม่จาก HALALY**\n- เมนู: ${menuName}\n- ราคา: ${price} บาท\n\nขอบคุณที่ใช้บริการครับ!`
+        }
+    ]).then(() => {
+        alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
+        liff.closeWindow(); // ปิดหน้า LIFF อัตโนมัติหลังสั่งเสร็จ
+    }).catch((err) => {
+        console.error('Error sending message:', err);
+        alert('เกิดข้อผิดพลาดในการส่งออเดอร์');
+    });
+}
 </body>
 </html>
