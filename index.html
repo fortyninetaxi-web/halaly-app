@@ -452,31 +452,30 @@
     }
 
     function sendOrderToLINE(menuName, price) {
-    // 1. ถ้าไม่ได้เปิดในแอป LINE ให้สั่งเปิดแอป LINE ด้วย LIFF URL ทันที
-    if (!liff.isInClient()) {
-        window.location.href = "https://liff.line.me/2011404606-uxwIjCJT";
-        return;
-    }
-
-    // 2. ถ้าอยู่ในแอป LINE แต่ยังไม่ได้ Login ให้ Login ก่อน
-    if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-    }
-
-    // 3. ส่งข้อความออเดอร์เข้าแชท LINE
-    liff.sendMessages([
-        {
-            type: 'text',
-            text: `🛒 **รายการสั่งซื้อใหม่จาก HALALY**\n- เมนู: ${menuName}\n- ราคา: ${price} บาท\n\nขอบคุณที่สั่งอาหารกับเราครับ!`
+    // 1. เช็กว่าล็อกอินหรือยัง ถ้ายังให้ล็อกอิน
+    if (typeof liff !== 'undefined' && liff.isInClient()) {
+        if (!liff.isLoggedIn()) {
+            liff.login({ redirectUri: "https://halaly-app-liat.vercel.app/" });
+            return;
         }
-    ]).then(() => {
-        alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้วครับ!');
-        liff.closeWindow();
-    }).catch((err) => {
-        console.error('Error sending message:', err);
-        alert('เกิดข้อผิดพลาดในการส่งข้อความ: ' + err.message);
-    });
+
+        // 2. ส่งข้อความเข้าแชท LINE
+        liff.sendMessages([
+            {
+                type: 'text',
+                text: `🛒 **รายการสั่งซื้อใหม่จาก HALALY**\n- เมนู: ${menuName}\n- ราคา: ${price} บาท\n\nขอบคุณที่สั่งอาหารกับเราครับ!`
+            }
+        ]).then(() => {
+            alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้วครับ!');
+            liff.closeWindow();
+        }).catch((err) => {
+            console.error('Error sending message:', err);
+            alert('เกิดข้อผิดพลาด: ' + err.message);
+        });
+    } else {
+        // กรณีเปิดผ่านเบราว์เซอร์ปกติ
+        alert(`สั่งซื้อ ${menuName} ราคา ${price} บาท เรียบร้อยแล้วครับ!`);
+    }
 }
 </script>
 
