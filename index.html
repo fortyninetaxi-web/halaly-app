@@ -614,7 +614,7 @@
         window.scrollTo(0, 0);
     }
 
-        // Checkout Order (ใช้ shareTargetPicker การันตีส่งได้ทุกช่องทาง)
+        // Checkout Order System (ยิงเข้าแชท LINE OA อัตโนมัติ 100%)
     function checkoutOrder() {
         if (cart.length === 0) {
             alert('กรุณาเลือกสินค้าลงตะกร้าก่อนส่งสั่งซื้อครับ');
@@ -623,6 +623,7 @@
 
         const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
         
+        // รายการสินค้า
         const itemContents = cart.map(item => ({
             type: "box",
             layout: "horizontal",
@@ -675,20 +676,18 @@
         };
 
         if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
-            if (liff.isApiAvailable('shareTargetPicker')) {
-                liff.shareTargetPicker([flexReceipt])
-                    .then((res) => {
-                        if (res) {
-                            alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
-                            cart = [];
-                            updateCartUI();
-                            liff.closeWindow();
-                        }
-                    })
-                    .catch((err) => alert('เกิดข้อผิดพลาด: ' + err.message));
-            } else {
-                alert('อุปกรณ์นี้ไม่รองรับ Share Target Picker');
-            }
+            // ยิงข้อความเข้าแชทปัจจุบันโดยตรง
+            liff.sendMessages([flexReceipt])
+                .then(() => {
+                    alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้ว!');
+                    cart = [];
+                    updateCartUI();
+                    liff.closeWindow();
+                })
+                .catch((err) => {
+                    console.error("sendMessages error:", err);
+                    alert('เกิดข้อผิดพลาด: ' + err.message + '\n\n(โปรดตรวจสอบว่าเปิดแอปจากปุ่มในห้องแชท LINE Official Account)');
+                });
         } else {
             alert(`สั่งซื้อรวม ฿${totalPrice} เรียบร้อยแล้วครับ!`);
         }
