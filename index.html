@@ -614,7 +614,7 @@
         window.scrollTo(0, 0);
     }
 
-    // Checkout & Send Flex Message
+        // Checkout & Send Flex Message (ยิงเข้าแชทอัตโนมัติต่างหาก)
     function checkoutOrder() {
         if (cart.length === 0) {
             alert('กรุณาเลือกสินค้าลงตะกร้าก่อนส่งสั่งซื้อครับ');
@@ -676,24 +676,36 @@
         };
 
         if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
-            if (liff.isApiAvailable('shareTargetPicker')) {
-                liff.shareTargetPicker([flexReceipt])
-                    .then((res) => {
-                        if (res) {
-                            alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
-                            cart = [];
-                            updateCartUI();
-                            liff.closeWindow();
-                        }
-                    })
-                    .catch((err) => alert('เกิดข้อผิดพลาด: ' + err.message));
-            } else {
-                alert('อุปกรณ์นี้ไม่รองรับการส่งข้อความตรง');
-            }
+            // 1. ลองส่งเข้าแชทปัจจุบันโดยตรงก่อน (ไม่ต้องขึ้นหน้าเลือกแชท)
+            liff.sendMessages([flexReceipt])
+                .then(() => {
+                    alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้ว!');
+                    cart = [];
+                    updateCartUI();
+                    liff.closeWindow();
+                })
+                .catch((err) => {
+                    console.log("sendMessages error, falling back to shareTargetPicker:", err);
+                    // 2. ถ้าส่งตรงไม่ได้ (เช่น ไม่ได้เปิดในห้องแชท) ค่อยใช้ Share Target Picker
+                    if (liff.isApiAvailable('shareTargetPicker')) {
+                        liff.shareTargetPicker([flexReceipt])
+                            .then((res) => {
+                                if (res) {
+                                    alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
+                                    cart = [];
+                                    updateCartUI();
+                                    liff.closeWindow();
+                                }
+                            })
+                            .catch((shareErr) => alert('เกิดข้อผิดพลาด: ' + shareErr.message));
+                    } else {
+                        alert('ไม่สามารถส่งข้อความได้: ' + err.message);
+                    }
+                });
         } else {
             alert(`สั่งซื้อรวม ฿${totalPrice} เรียบร้อยแล้วครับ!`);
-        }
-    }
+        }                                                            }
+                
 </script>
 
 </body>
