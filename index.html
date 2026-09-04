@@ -529,6 +529,8 @@
                         liff.getProfile().then(profile => {
                             document.getElementById('user-display-name').innerText = `คุณ ${profile.displayName}`;
                         }).catch(e => console.log(e));
+                    } else {
+                        liff.login();
                     }
                 })
                 .catch((err) => console.error('LIFF Init error:', err));
@@ -614,7 +616,7 @@
         window.scrollTo(0, 0);
     }
 
-    // Checkout & Send Flex Message (ปรับปรับปรุงให้ไม่ค้าง ไม่เด้ง error)
+    // Checkout Order System (ยิงตรงเข้าแชท HALALY 100%)
     function checkoutOrder() {
         if (cart.length === 0) {
             alert('กรุณาเลือกสินค้าลงตะกร้าก่อนส่งสั่งซื้อครับ');
@@ -623,7 +625,6 @@
 
         const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
         
-        // รายการสินค้า
         const itemContents = cart.map(item => ({
             type: "box",
             layout: "horizontal",
@@ -676,7 +677,6 @@
         };
 
         if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
-            // 1. ลองส่งเข้าแชทปัจจุบันก่อน
             liff.sendMessages([flexReceipt])
                 .then(() => {
                     alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้ว!');
@@ -685,24 +685,8 @@
                     liff.closeWindow();
                 })
                 .catch((err) => {
-                    console.log("sendMessages ไม่ผ่าน (เนื่องจากเปิดนอกแชท), เรียกใช้ shareTargetPicker แทน");
-                    // 2. ถ้าเปิดนอกแชท ให้สลับมาใช้ Share Target Picker เลือกแชทส่งแทนทันที
-                    if (liff.isApiAvailable('shareTargetPicker')) {
-                        liff.shareTargetPicker([flexReceipt])
-                            .then((res) => {
-                                if (res) {
-                                    alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
-                                    cart = [];
-                                    updateCartUI();
-                                    liff.closeWindow();
-                                }
-                            })
-                            .catch((shareErr) => {
-                                alert('เกิดข้อผิดพลาดในการส่งข้อความ: ' + shareErr.message);
-                            });
-                    } else {
-                        alert('อุปกรณ์นี้ไม่รองรับการส่งข้อความผ่าน LIFF');
-                    }
+                    console.error("sendMessages error:", err);
+                    alert('เกิดข้อผิดพลาดในการส่งข้อความ: ' + err.message);
                 });
         } else {
             alert(`สั่งซื้อรวม ฿${totalPrice} เรียบร้อยแล้วครับ!`);
