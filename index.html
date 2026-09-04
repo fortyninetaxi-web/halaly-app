@@ -614,7 +614,7 @@
         window.scrollTo(0, 0);
     }
 
-        // Checkout & Send Flex Message (ยิงเข้าแชทอัตโนมัติต่างหาก)
+    // Checkout & Send Flex Message (ยิงเข้าแชทอัตโนมัติ 100%)
     function checkoutOrder() {
         if (cart.length === 0) {
             alert('กรุณาเลือกสินค้าลงตะกร้าก่อนส่งสั่งซื้อครับ');
@@ -676,7 +676,7 @@
         };
 
         if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
-            // 1. ลองส่งเข้าแชทปัจจุบันโดยตรงก่อน (ไม่ต้องขึ้นหน้าเลือกแชท)
+            // ยิงเข้าแชทปัจจุบันโดยตรง
             liff.sendMessages([flexReceipt])
                 .then(() => {
                     alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้ว!');
@@ -685,27 +685,13 @@
                     liff.closeWindow();
                 })
                 .catch((err) => {
-                    console.log("sendMessages error, falling back to shareTargetPicker:", err);
-                    // 2. ถ้าส่งตรงไม่ได้ (เช่น ไม่ได้เปิดในห้องแชท) ค่อยใช้ Share Target Picker
-                    if (liff.isApiAvailable('shareTargetPicker')) {
-                        liff.shareTargetPicker([flexReceipt])
-                            .then((res) => {
-                                if (res) {
-                                    alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
-                                    cart = [];
-                                    updateCartUI();
-                                    liff.closeWindow();
-                                }
-                            })
-                            .catch((shareErr) => alert('เกิดข้อผิดพลาด: ' + shareErr.message));
-                    } else {
-                        alert('ไม่สามารถส่งข้อความได้: ' + err.message);
-                    }
+                    console.error("sendMessages error:", err);
+                    alert('เกิดข้อผิดพลาดในการยิงเข้าแชท: ' + err.message + '\n\n(คำแนะนำ: โปรดเปิดใช้งาน LIFF จากในห้องแชท LINE)');
                 });
         } else {
             alert(`สั่งซื้อรวม ฿${totalPrice} เรียบร้อยแล้วครับ!`);
-        }                                                            }
-                
+        }
+    }
 </script>
 
 </body>
