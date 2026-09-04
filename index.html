@@ -614,7 +614,7 @@
         window.scrollTo(0, 0);
     }
 
-        // Checkout Order System (Hybrid: ยิงตรงถ้าอยู่ในแชท / เปิดแชร์ถ้าอยู่นอกแชท)
+        // Checkout Order (ใช้ shareTargetPicker การันตีส่งได้ทุกช่องทาง)
     function checkoutOrder() {
         if (cart.length === 0) {
             alert('กรุณาเลือกสินค้าลงตะกร้าก่อนส่งสั่งซื้อครับ');
@@ -623,7 +623,6 @@
 
         const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
         
-        // รายการสินค้าสำหรับ Flex Message
         const itemContents = cart.map(item => ({
             type: "box",
             layout: "horizontal",
@@ -676,34 +675,19 @@
         };
 
         if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
-            const contextType = liff.getContext() ? liff.getContext().type : null;
-
-            // ตรวจสอบว่าเปิดแอปจากภายในห้องแชทหรือไม่ (utou = แชทส่วนตัว, group, room)
-            if (contextType === 'utou' || contextType === 'group' || contextType === 'room') {
-                liff.sendMessages([flexReceipt])
-                    .then(() => {
-                        alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้ว!');
-                        cart = [];
-                        updateCartUI();
-                        liff.closeWindow();
+            if (liff.isApiAvailable('shareTargetPicker')) {
+                liff.shareTargetPicker([flexReceipt])
+                    .then((res) => {
+                        if (res) {
+                            alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
+                            cart = [];
+                            updateCartUI();
+                            liff.closeWindow();
+                        }
                     })
-                    .catch((err) => alert('เกิดข้อผิดพลาดในการส่งเข้าแชท: ' + err.message));
+                    .catch((err) => alert('เกิดข้อผิดพลาด: ' + err.message));
             } else {
-                // ถ้าเปิดนอกแชท (เช่น Rich Menu) ให้เปิด Share Target Picker ส่งเข้าห้องแชทร้านค้า
-                if (liff.isApiAvailable('shareTargetPicker')) {
-                    liff.shareTargetPicker([flexReceipt])
-                        .then((res) => {
-                            if (res) {
-                                alert('ส่งรายการสั่งซื้อเรียบร้อยแล้ว!');
-                                cart = [];
-                                updateCartUI();
-                                liff.closeWindow();
-                            }
-                        })
-                        .catch((err) => alert('เกิดข้อผิดพลาด: ' + err.message));
-                } else {
-                    alert('อุปกรณ์นี้ไม่รองรับการส่งข้อความ');
-                }
+                alert('อุปกรณ์นี้ไม่รองรับ Share Target Picker');
             }
         } else {
             alert(`สั่งซื้อรวม ฿${totalPrice} เรียบร้อยแล้วครับ!`);
