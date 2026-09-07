@@ -50,6 +50,38 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
+        /* --- Custom Toast Alert (การ์ดแจ้งเตือนคลีนๆ ไม่ติดชื่อเว็บ) --- */
+        .custom-toast {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #323232;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            z-index: 10000;
+            transition: top 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            width: 85%;
+            max-width: 380px;
+            justify-content: center;
+        }
+
+        .custom-toast.show {
+            top: 30px;
+        }
+
+        .custom-toast i {
+            color: #00E676;
+            font-size: 1.2rem;
+        }
+
         /* --- Header --- */
         .header-top {
             background: linear-gradient(135deg, var(--primary) 0%, #00C853 100%);
@@ -354,6 +386,12 @@
 </head>
 <body>
 
+<!-- Custom Toast Notification Box -->
+<div id="toast-msg" class="custom-toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toast-text">ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้ว!</span>
+</div>
+
 <div class="app-container">
     <!-- Header -->
     <div class="header-top">
@@ -535,6 +573,17 @@
         }
     });
 
+    // Custom Toast Alert Function (แสดงข้อความเตือนแบบสวยๆ ไม่มีชื่อเว็บ)
+    function showToast(message) {
+        const toast = document.getElementById('toast-msg');
+        document.getElementById('toast-text').innerText = message;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 1500);
+    }
+
     // Select Restaurant Function
     function selectRestaurant(name) {
         selectedRestaurant = name;
@@ -614,10 +663,10 @@
         window.scrollTo(0, 0);
     }
 
-    // Checkout Order System (Direct Send Messages)
+    // Checkout Order System
     function checkoutOrder() {
         if (cart.length === 0) {
-            alert('กรุณาเลือกสินค้าลงตะกร้าก่อนส่งสั่งซื้อครับ');
+            showToast('กรุณาเลือกสินค้าลงตะกร้าก่อนครับ');
             return;
         }
 
@@ -677,17 +726,19 @@
         if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
             liff.sendMessages([flexReceipt])
                 .then(() => {
-                    alert('ส่งรายการสั่งซื้อเข้าแชทเรียบร้อยแล้ว!');
+                    showToast('ส่งรายการสั่งซื้อสำเร็จ!');
                     cart = [];
                     updateCartUI();
-                    liff.closeWindow();
+                    setTimeout(() => {
+                        liff.closeWindow();
+                    }, 1200);
                 })
                 .catch((err) => {
                     console.error("sendMessages error:", err);
-                    alert('เกิดข้อผิดพลาดในการส่งข้อความ: ' + err.message);
+                    showToast('เกิดข้อผิดพลาดในการส่งข้อความ');
                 });
         } else {
-            alert(`สั่งซื้อรวม ฿${totalPrice} เรียบร้อยแล้วครับ!`);
+            showToast(`สั่งซื้อรวม ฿${totalPrice} เรียบร้อยแล้ว!`);
         }
     }
 </script>
