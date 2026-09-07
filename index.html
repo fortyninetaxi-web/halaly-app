@@ -529,8 +529,6 @@
                         liff.getProfile().then(profile => {
                             document.getElementById('user-display-name').innerText = `คุณ ${profile.displayName}`;
                         }).catch(e => console.log(e));
-                    } else {
-                        liff.login();
                     }
                 })
                 .catch((err) => console.error('LIFF Init error:', err));
@@ -616,7 +614,7 @@
         window.scrollTo(0, 0);
     }
 
-    // Checkout Order System (ยิงตรงเข้าแชท HALALY 100%)
+    // Checkout Order System (Direct Send Messages)
     function checkoutOrder() {
         if (cart.length === 0) {
             alert('กรุณาเลือกสินค้าลงตะกร้าก่อนส่งสั่งซื้อครับ');
