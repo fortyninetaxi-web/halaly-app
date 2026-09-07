@@ -720,11 +720,14 @@
         const phone = document.getElementById('cust-phone').value.trim();
         const address = document.getElementById('cust-address').value.trim();
 
+        // 🔴 ปรับตรงนี้: เปลี่ยนจาก alert() เป็น showToast() สไตล์แอปมืออาชีพ
         if (!name || !phone || !address) {
-            alert('กรุณากรอกข้อมูลผู้รับ เบอร์โทร และที่อยู่จัดส่งให้ครบถ้วนครับ');
+            showToast('กรุณากรอกข้อมูลจัดส่งให้ครบถ้วน');
             switchPage('cart-view');
             return;
         }
+
+        // ... โค้ดส่วนที่เหลือคงเดิม ...
 
         const foodTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
         const deliveryFee = selectedRestaurant ? selectedRestaurant.deliveryFee : 0;
