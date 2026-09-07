@@ -76,7 +76,7 @@
         .custom-toast.show { top: 30px; }
         .custom-toast i { color: #00E676; font-size: 1.2rem; }
 
-        /* --- Header --- */
+        /* Header */
         .header-top {
             background: linear-gradient(135deg, var(--primary) 0%, #00C853 100%);
             padding: 16px;
@@ -102,7 +102,7 @@
             border: none;
         }
 
-        /* --- Views --- */
+        /* Views */
         .page-view {
             display: none;
             padding: 16px;
@@ -116,7 +116,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Services Grid --- */
+        /* Services Grid */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -158,7 +158,7 @@
             justify-content: space-between;
         }
 
-        /* --- Restaurant List UI --- */
+        /* Restaurant List UI */
         .restaurant-card {
             background: white;
             border-radius: var(--radius-md);
@@ -173,7 +173,7 @@
         .restaurant-name { font-size: 1.05rem; font-weight: 700; }
         .restaurant-meta { display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-sub); margin-top: 4px; }
 
-        /* --- Food Grid --- */
+        /* Food Grid */
         .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .food-card {
             background: white;
@@ -201,7 +201,7 @@
             cursor: pointer;
         }
 
-        /* --- Form & Summary UI --- */
+        /* Form UI */
         .box-card {
             background: white;
             padding: 14px;
@@ -221,6 +221,19 @@
             outline: none;
         }
         .form-input:focus { border-color: var(--primary); }
+
+        .payment-banner {
+            background: #E8F5E9;
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary-dark);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
 
         .coupon-box { display: flex; gap: 8px; margin-top: 6px; }
         .coupon-btn {
@@ -250,7 +263,7 @@
             margin-top: 6px;
         }
 
-        /* --- Cart Floating Bar & Items --- */
+        /* Cart Floating Bar & Items */
         .cart-bar {
             position: fixed;
             bottom: 60px;
@@ -307,7 +320,7 @@
             border: 1px solid #DDD; background: white; font-weight: bold; cursor: pointer;
         }
 
-        /* --- Bottom Nav --- */
+        /* Bottom Nav */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -368,7 +381,7 @@
                 <div class="service-info">
                     <h3>สั่งของ</h3>
                     <p>ของสด ครบครัน</p>
-                    <span class="badge-tag">ส่งฟรี*</span>
+                    <span class="badge-tag">เร็วๆ นี้</span>
                 </div>
                 <div class="service-icon"><i class="fa-solid fa-basket-shopping"></i></div>
             </div>
@@ -377,7 +390,7 @@
                 <div class="service-info">
                     <h3>เรียกรถ</h3>
                     <p>เดินทางปลอดภัย</p>
-                    <span class="badge-tag">ลด ฿100*</span>
+                    <span class="badge-tag">เร็วๆ นี้</span>
                 </div>
                 <div class="service-icon"><i class="fa-solid fa-motorcycle"></i></div>
             </div>
@@ -386,6 +399,7 @@
                 <div class="service-info">
                     <h3>เมสเซนเจอร์</h3>
                     <p>ส่งพัสดุด่วน</p>
+                    <span class="badge-tag">เร็วๆ นี้</span>
                 </div>
                 <div class="service-icon"><i class="fa-solid fa-box"></i></div>
             </div>
@@ -398,9 +412,7 @@
             <span><i class="fa-solid fa-store" style="color: var(--primary);"></i> เลือกร้านอาหารฮาลาล</span>
             <button onclick="switchPage('home-view')" style="border:none; background:none; color:var(--primary); font-size:0.85rem; font-weight:600;">ย้อนกลับ</button>
         </div>
-        <div id="restaurant-list">
-            <!-- Render ร้านค้าอัตโนมัติ -->
-        </div>
+        <div id="restaurant-list"></div>
     </div>
 
     <!-- FOOD MENU VIEW -->
@@ -409,9 +421,7 @@
             <span id="current-restaurant-title"><i class="fa-solid fa-fire" style="color: var(--secondary);"></i> เมนูอาหาร</span>
             <button onclick="switchPage('restaurant-view')" style="border:none; background:none; color:var(--primary); font-size:0.85rem; font-weight:600;">เปลี่ยนร้าน</button>
         </div>
-        <div id="food-grid" class="food-grid">
-            <!-- Render เมนูอาหารอัตโนมัติ -->
-        </div>
+        <div id="food-grid" class="food-grid"></div>
     </div>
 
     <!-- CART VIEW -->
@@ -440,6 +450,20 @@
             </div>
         </div>
 
+        <!-- วิธีชำระเงิน (บังคับชำระผ่านแอป Cashless 100%) -->
+        <div class="box-card">
+            <div style="font-weight:600; font-size:0.85rem; color:var(--text-sub); margin-bottom:8px;">
+                <i class="fa-solid fa-wallet" style="color:var(--primary);"></i> วิธีการชำระเงิน
+            </div>
+            <div class="payment-banner">
+                <i class="fa-solid fa-qrcode" style="font-size:1.8rem;"></i>
+                <div>
+                    <div>ชำระเงินไร้เงินสด (Cashless 100%)</div>
+                    <div style="font-size:0.75rem; font-weight:400; color:var(--text-sub);">โอนผ่าน PromptPay / QR Code บัญชีกลาง HALALY</div>
+                </div>
+            </div>
+        </div>
+
         <!-- ส่วนลด & คูปอง -->
         <div class="box-card">
             <div style="font-weight:600; font-size:0.85rem; color:var(--text-sub); margin-bottom:6px;">
@@ -451,9 +475,7 @@
             </div>
         </div>
 
-        <div id="cart-items-list">
-            <!-- รายการสินค้าแสดงตรงนี้ -->
-        </div>
+        <div id="cart-items-list"></div>
 
         <!-- สรุปราคารวม -->
         <div id="price-summary-box" class="box-card" style="margin-top:12px; display:none;">
@@ -508,7 +530,7 @@
     let appliedDiscount = 0;
     let discountCodeName = "";
 
-    // ฐานข้อมูลร้านค้าฮาลาลจริง & เมนูอาหาร
+    // ฐานข้อมูลร้านค้าฮาลาลจริง (แก้ไข/เพิ่มร้านค้าได้ที่นี่)
     const restaurantsData = [
         {
             id: 1,
@@ -561,7 +583,6 @@
         setTimeout(() => { toast.classList.remove('show'); }, 1500);
     }
 
-    // Render รายชื่อร้านค้า
     function renderRestaurants() {
         const container = document.getElementById('restaurant-list');
         container.innerHTML = restaurantsData.map(r => `
@@ -579,7 +600,6 @@
         `).join('');
     }
 
-    // เลือกร้านค้า & โหลดเมนู
     function selectRestaurantById(id) {
         selectedRestaurant = restaurantsData.find(r => r.id === id);
         document.getElementById('current-restaurant-title').innerText = selectedRestaurant.name;
@@ -617,7 +637,6 @@
         updateCartUI();
     }
 
-    // ระบบใช้โค้ดส่วนลด
     function applyCoupon() {
         const code = document.getElementById('coupon-code').value.trim().toUpperCase();
         if (code === "HALALY10") {
@@ -632,7 +651,6 @@
         updateCartUI();
     }
 
-    // คำนวณราคาทั้งหมด
     function updateCartUI() {
         const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
         const foodTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -666,7 +684,6 @@
             </div>
         `).join('');
 
-        // อัปเดตตารางสรุปราคา
         document.getElementById('sum-food').innerText = `฿${foodTotal}`;
         document.getElementById('sum-delivery').innerText = `฿${deliveryFee}`;
         if (appliedDiscount > 0) {
@@ -786,7 +803,8 @@
                             contents: [
                                 { type: "text", text: "📍 ข้อมูลการจัดส่ง", weight: "bold", size: "xs", color: "#00B14F" },
                                 { type: "text", text: `ผู้รับ: ${name} (${phone})`, size: "xs", color: "#555555", margin: "xs", wrap: true },
-                                { type: "text", text: `ที่อยู่: ${address}`, size: "xs", color: "#555555", margin: "xs", wrap: true }
+                                { type: "text", text: `ที่อยู่: ${address}`, size: "xs", color: "#555555", margin: "xs", wrap: true },
+                                { type: "text", text: "การชำระเงิน: โอนผ่าน QR Code บัญชีกลาง", size: "xs", color: "#00B14F", margin: "xs", weight: "bold" }
                             ]
                         }
                     ]
