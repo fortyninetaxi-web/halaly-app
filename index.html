@@ -201,7 +201,7 @@
             cursor: pointer;
         }
 
-        /* Form & Payment UI */
+        /* Form UI */
         .box-card {
             background: white;
             padding: 14px;
@@ -450,7 +450,7 @@
             </div>
         </div>
 
-        <!-- วิธีชำระเงิน (สแกน QR Code PromptPay บัญชีกลาง 100%) -->
+        <!-- วิธีชำระเงิน -->
         <div class="box-card">
             <div style="font-weight:600; font-size:0.85rem; color:var(--text-sub); margin-bottom:8px;">
                 <i class="fa-solid fa-wallet" style="color:var(--primary);"></i> วิธีการชำระเงิน
@@ -486,7 +486,7 @@
                 <span id="sum-discount">-฿0</span>
             </div>
             <div class="summary-row total"><span>ราคาสุทธิ</span><span id="sum-net">฿0</span></div>
-            <button class="add-btn" style="margin-top:12px; padding:12px; font-size:1rem;" onclick="checkoutOrder()">ยืนยันสั่งซื้อสินค้า</button>
+            <button class="add-btn" style="margin-top:12px; padding:12px; font-size:1rem;" onclick="checkoutOrder()">ตรวจสอบและสั่งซื้อ</button>
         </div>
     </div>
 
@@ -521,63 +521,87 @@
             <span>ส่งออเดอร์</span>
         </button>
     </div>
+
+    <!-- Modal สรุปคำสั่งซื้อก่อนกด ยืนยัน -->
+    <div id="confirm-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:white; width:90%; max-width:400px; border-radius:16px; padding:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2); animation: fadeIn 0.2s;">
+            <h3 style="color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-file-invoice"></i> สรุปรายการสั่งซื้อ
+            </h3>
+            <div id="modal-summary-content" style="font-size:0.85rem; color:#444; max-height:280px; overflow-y:auto; margin-bottom:12px; border-bottom:1px solid #EEE; padding-bottom:10px;"></div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="closeConfirmModal()" style="flex:1; padding:10px; border:1px solid #CCC; background:white; border-radius:8px; font-weight:600; cursor:pointer;">แก้ไข</button>
+                <button onclick="processFinalCheckout()" style="flex:2; padding:10px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:600; cursor:pointer;">ยืนยันสั่งซื้อ 🚀</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
     const myLiffId = "2011404606-uxwIjCJT";
+    
+    // 🔗 Web App URL จาก Google Apps Script ของคุณ
+    const googleSheetApiUrl = "https://script.google.com/macros/s/AKfycbzPF2_BhOw-52cyD7A9tgG77kZC-EcQ57kFw7ZbIKZG32xS-ZeOWCTp-LkG-CjLOPLTgA/exec"; 
+
     let cart = [];
+    let restaurantsData = [];
     let selectedRestaurant = null;
     let appliedDiscount = 0;
     let discountCodeName = "";
 
-    // ==========================================
-    // 🛠️ ตัวแปรฐานข้อมูลร้านค้าฮาลาลจริง (restaurantsData)
-    // สามารถก๊อปปี้เพิ่ม/แก้ไขร้านค้าและเมนูได้ง่ายๆ ตรงนี้เลยครับ
-    // ==========================================
-    const restaurantsData = [
-        {
-            id: 1,
-            name: "ข้าวหมกไก่บังแอ (สูตรเด็ด)",
-            img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500",
-            rating: "4.9",
-            time: "15-25 นาที",
-            deliveryFee: 15,
-            menus: [
-                { name: "ข้าวหมกไก่ทอดฮาลาล", price: 60, img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=300" },
-                { name: "ข้าวหมกเนื้อเปื่อย", price: 80, img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300" },
-                { name: "ซุปหางวัวแซ่บ", price: 100, img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=300" }
-            ]
-        },
-        {
-            id: 2,
-            name: "ฮาลาล พิซซ่า & เบอร์เกอร์ สตรีท",
-            img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500",
-            rating: "4.8",
-            time: "20-30 นาที",
-            deliveryFee: 20,
-            menus: [
-                { name: "พิซซ่าฮาลาลถาดใหญ่", price: 199, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300" },
-                { name: "เบอร์เกอร์เนื้อแน่นฉ่ำ", price: 89, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300" },
-                { name: "เฟรนช์ฟรายส์ชีสฮาลาล", price: 49, img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300" }
-            ]
-        }
-    ];
-
     document.addEventListener('DOMContentLoaded', function () {
-        renderRestaurants();
+        loadSavedAddress();
+        fetchRestaurantsFromSheet();
+
         if (typeof liff !== 'undefined') {
             liff.init({ liffId: myLiffId })
                 .then(() => {
                     if (liff.isLoggedIn()) {
                         liff.getProfile().then(profile => {
                             document.getElementById('user-display-name').innerText = `คุณ ${profile.displayName}`;
-                            document.getElementById('cust-name').value = profile.displayName;
+                            if (!document.getElementById('cust-name').value) {
+                                document.getElementById('cust-name').value = profile.displayName;
+                            }
                         }).catch(e => console.log(e));
                     }
                 })
                 .catch((err) => console.error('LIFF Init error:', err));
         }
     });
+
+    // 📌 ดึงข้อมูลร้านค้าจาก Google Sheets
+    function fetchRestaurantsFromSheet() {
+        const container = document.getElementById('restaurant-list');
+        container.innerHTML = '<p style="text-align:center; padding:30px; color:var(--text-sub);"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>กำลังโหลดรายการร้านค้า...</p>';
+
+        fetch(googleSheetApiUrl)
+            .then(res => res.json())
+            .then(data => {
+                restaurantsData = data;
+                renderRestaurants();
+            })
+            .catch(err => {
+                console.error("Error loading sheet data:", err);
+                container.innerHTML = '<p style="text-align:center; padding:20px; color:red;">เกิดข้อผิดพลาดในการโหลดข้อมูลร้านค้า</p>';
+                showToast('ไม่สามารถดึงข้อมูลร้านค้าได้');
+            });
+    }
+
+    function loadSavedAddress() {
+        const savedName = localStorage.getItem('halaly_cust_name');
+        const savedPhone = localStorage.getItem('halaly_cust_phone');
+        const savedAddress = localStorage.getItem('halaly_cust_address');
+
+        if (savedName) document.getElementById('cust-name').value = savedName;
+        if (savedPhone) document.getElementById('cust-phone').value = savedPhone;
+        if (savedAddress) document.getElementById('cust-address').value = savedAddress;
+    }
+
+    function saveAddressInfo(name, phone, address) {
+        localStorage.setItem('halaly_cust_name', name);
+        localStorage.setItem('halaly_cust_phone', phone);
+        localStorage.setItem('halaly_cust_address', address);
+    }
 
     function showToast(message) {
         const toast = document.getElementById('toast-msg');
@@ -588,6 +612,11 @@
 
     function renderRestaurants() {
         const container = document.getElementById('restaurant-list');
+        if (!restaurantsData || restaurantsData.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-sub);">ยังไม่มีร้านค้าในระบบ</p>';
+            return;
+        }
+
         container.innerHTML = restaurantsData.map(r => `
             <div class="restaurant-card" onclick="selectRestaurantById(${r.id})">
                 <img src="${r.img}" class="restaurant-img" alt="${r.name}">
@@ -604,7 +633,7 @@
     }
 
     function selectRestaurantById(id) {
-        selectedRestaurant = restaurantsData.find(r => r.id === id);
+        selectedRestaurant = restaurantsData.find(r => Number(r.id) === Number(id));
         document.getElementById('current-restaurant-title').innerText = selectedRestaurant.name;
         
         const grid = document.getElementById('food-grid');
@@ -657,7 +686,7 @@
     function updateCartUI() {
         const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
         const foodTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const deliveryFee = selectedRestaurant ? selectedRestaurant.deliveryFee : 0;
+        const deliveryFee = selectedRestaurant ? Number(selectedRestaurant.deliveryFee) : 0;
         const netTotal = Math.max(0, foodTotal + deliveryFee - appliedDiscount);
 
         document.getElementById('cart-count').innerText = totalItems;
@@ -712,7 +741,6 @@
         window.scrollTo(0, 0);
     }
 
-    // Checkout Order System (ออกใบเสร็จ Flex Message พร้อมสถานะ "ชำระเงินแล้ว 🟢")
     function checkoutOrder() {
         if (cart.length === 0) {
             showToast('กรุณาเลือกสินค้าลงตะกร้าก่อนครับ');
@@ -723,15 +751,48 @@
         const phone = document.getElementById('cust-phone').value.trim();
         const address = document.getElementById('cust-address').value.trim();
 
-        // ใช้ showToast แทน alert() แบบเดิม (ไม่มีชื่อเว็บเด้งกวนใจ)
         if (!name || !phone || !address) {
             showToast('กรุณากรอกข้อมูลจัดส่งให้ครบถ้วน');
             switchPage('cart-view');
             return;
         }
 
+        saveAddressInfo(name, phone, address);
+
         const foodTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const deliveryFee = selectedRestaurant ? selectedRestaurant.deliveryFee : 0;
+        const deliveryFee = selectedRestaurant ? Number(selectedRestaurant.deliveryFee) : 0;
+        const netTotal = Math.max(0, foodTotal + deliveryFee - appliedDiscount);
+
+        let itemsHtml = cart.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>${i.name} x${i.qty}</span><b>฿${i.price * i.qty}</b></div>`).join('');
+
+        document.getElementById('modal-summary-content').innerHTML = `
+            <div style="font-weight:600; color:var(--text-main); margin-bottom:6px;">ร้าน: ${selectedRestaurant.name}</div>
+            <div style="background:#F9F9F9; padding:8px; border-radius:8px; margin-bottom:8px;">${itemsHtml}</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>ค่าอาหาร:</span><span>฿${foodTotal}</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>ค่าจัดส่ง:</span><span>฿${deliveryFee}</span></div>
+            ${appliedDiscount > 0 ? `<div style="display:flex; justify-content:space-between; color:var(--secondary); margin-bottom:2px;"><span>ส่วนลด:</span><span>-฿${appliedDiscount}</span></div>` : ''}
+            <div style="display:flex; justify-content:space-between; font-weight:700; font-size:1rem; color:var(--primary); margin-top:6px; border-top:1px dashed #DDD; padding-top:6px;"><span>ยอดชำระสุทธิ:</span><span>฿${netTotal}</span></div>
+            <div style="margin-top:10px; font-size:0.75rem; color:#555; background:#E8F5E9; padding:8px; border-radius:6px;">
+                📍 <b>ข้อมูลผู้รับ:</b> ${name} (${phone})<br>ที่อยู่: ${address}
+            </div>
+        `;
+
+        document.getElementById('confirm-modal').style.display = 'flex';
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirm-modal').style.display = 'none';
+    }
+
+    function processFinalCheckout() {
+        closeConfirmModal();
+
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+        const address = document.getElementById('cust-address').value.trim();
+
+        const foodTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const deliveryFee = selectedRestaurant ? Number(selectedRestaurant.deliveryFee) : 0;
         const netTotal = Math.max(0, foodTotal + deliveryFee - appliedDiscount);
 
         const itemContents = cart.map(item => ({
