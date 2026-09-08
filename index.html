@@ -574,8 +574,12 @@
         const container = document.getElementById('restaurant-list');
         container.innerHTML = '<p style="text-align:center; padding:30px; color:var(--text-sub);"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>กำลังโหลดรายการร้านค้า...</p>';
 
-        fetch(googleSheetApiUrl)
-            .then(res => res.json())
+        // 🟢 เพิ่ม { redirect: 'follow' } เพื่อให้ดึงข้อมูลข้ามโดเมนผ่าน
+        fetch(googleSheetApiUrl, { redirect: 'follow' })
+            .then(res => {
+                if (!res.ok) throw new Error('Network response error');
+                return res.json();
+            })
             .then(data => {
                 restaurantsData = data;
                 renderRestaurants();
