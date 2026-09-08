@@ -522,16 +522,16 @@
         </button>
     </div>
 
-    <!-- Modal สรุปคำสั่งซื้อก่อนกด ยืนยัน -->
+    <!-- Modal สรุปคำสั่งซื้อพร้อม QR Code PromptPay -->
     <div id="confirm-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
         <div style="background:white; width:90%; max-width:400px; border-radius:16px; padding:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2); animation: fadeIn 0.2s;">
             <h3 style="color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-                <i class="fa-solid fa-file-invoice"></i> สรุปรายการสั่งซื้อ
+                <i class="fa-solid fa-file-invoice"></i> สรุปรายการ & ชำระเงิน
             </h3>
-            <div id="modal-summary-content" style="font-size:0.85rem; color:#444; max-height:280px; overflow-y:auto; margin-bottom:12px; border-bottom:1px solid #EEE; padding-bottom:10px;"></div>
+            <div id="modal-summary-content" style="font-size:0.85rem; color:#444; max-height:360px; overflow-y:auto; margin-bottom:12px; border-bottom:1px solid #EEE; padding-bottom:10px;"></div>
             <div style="display:flex; gap:10px;">
                 <button onclick="closeConfirmModal()" style="flex:1; padding:10px; border:1px solid #CCC; background:white; border-radius:8px; font-weight:600; cursor:pointer;">แก้ไข</button>
-                <button onclick="processFinalCheckout()" style="flex:2; padding:10px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:600; cursor:pointer;">ยืนยันสั่งซื้อ 🚀</button>
+                <button onclick="processFinalCheckout()" style="flex:2; padding:10px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:600; cursor:pointer;">โอนเงินแล้ว แจ้งออเดอร์ 🚀</button>
             </div>
         </div>
     </div>
@@ -539,9 +539,13 @@
 
 <script>
     const myLiffId = "2011404606-uxwIjCJT";
-    
-    // 🔗 Web App URL จาก Google Apps Script ของคุณ
-    const googleSheetApiUrl = "https://script.google.com/macros/s/AKfycbxJHFI2GoLOKJRNBmEth68ZZj1mzxiEpXOyGicEoGLJyWXmplzb4G3kxR-fm75k8eCZKQ/exec"; 
+    const googleSheetApiUrl = "https://script.google.com/macros/s/AKfycbzPF2_BhOw-52cyD7A9tgG77kZC-EcQ57kFw7ZbIKZG32xS-ZeOWCTp-LkG-CjLOPLTgA/exec"; 
+
+    // 💳 ข้อมูล PromptPay บัญชีกลาง
+    const promptpayQrImgUrl = "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400"; // 🔴 นำ URL รูป QR Code PromptPay ของคุณมาใส่ตรงนี้
+    const promptpayNumber = "08X-XXX-XXXX"; // 🔴 เบอร์/เลขพร้อมเปย์
+    // 💳 ข้อมูล PromptPay บัญชีรับชำระเงิน
+    const promptpayAccountName = "HALALY Payment Account";
 
     let cart = [];
     let restaurantsData = [];
@@ -569,17 +573,12 @@
         }
     });
 
-    // 📌 ดึงข้อมูลร้านค้าจาก Google Sheets
     function fetchRestaurantsFromSheet() {
         const container = document.getElementById('restaurant-list');
         container.innerHTML = '<p style="text-align:center; padding:30px; color:var(--text-sub);"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>กำลังโหลดรายการร้านค้า...</p>';
 
-        // 🟢 เพิ่ม { redirect: 'follow' } เพื่อให้ดึงข้อมูลข้ามโดเมนผ่าน
         fetch(googleSheetApiUrl, { redirect: 'follow' })
-            .then(res => {
-                if (!res.ok) throw new Error('Network response error');
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 restaurantsData = data;
                 renderRestaurants();
@@ -775,7 +774,23 @@
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>ค่าอาหาร:</span><span>฿${foodTotal}</span></div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>ค่าจัดส่ง:</span><span>฿${deliveryFee}</span></div>
             ${appliedDiscount > 0 ? `<div style="display:flex; justify-content:space-between; color:var(--secondary); margin-bottom:2px;"><span>ส่วนลด:</span><span>-฿${appliedDiscount}</span></div>` : ''}
-            <div style="display:flex; justify-content:space-between; font-weight:700; font-size:1rem; color:var(--primary); margin-top:6px; border-top:1px dashed #DDD; padding-top:6px;"><span>ยอดชำระสุทธิ:</span><span>฿${netTotal}</span></div>
+            <div style="display:flex; justify-content:space-between; font-weight:700; font-size:1.1rem; color:var(--primary); margin-top:6px; border-top:1px dashed #DDD; padding-top:6px;">
+                <span>ยอดชำระสุทธิ:</span><span>฿${netTotal}</span>
+            </div>
+
+            <!-- 💳 แสดง QR Code PromptPay -->
+            <div style="margin-top:12px; background:#F0FDF4; border:1px solid #BBF7D0; border-radius:12px; padding:12px; text-align:center;">
+                <div style="font-size:0.85rem; font-weight:700; color:var(--primary-dark); margin-bottom:4px;">
+                    <i class="fa-solid fa-qrcode"></i> สแกนชำระเงินผ่าน PromptPay
+                </div>
+                <div style="font-size:0.75rem; color:#555; margin-bottom:8px;">สแกนจ่าย <b>฿${netTotal}</b> แล้วกดแจ้งยืนยันได้เลย</div>
+                
+                <img src="${promptpayQrImgUrl}" alt="PromptPay QR Code" style="width:180px; height:180px; object-fit:contain; border-radius:8px; border:2px solid #FFF; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                
+                <div style="font-size:0.8rem; font-weight:600; color:#333; margin-top:6px;">${promptpayAccountName}</div>
+                <div style="font-size:0.85rem; font-weight:700; color:var(--primary);">${promptpayNumber}</div>
+            </div>
+
             <div style="margin-top:10px; font-size:0.75rem; color:#555; background:#E8F5E9; padding:8px; border-radius:6px;">
                 📍 <b>ข้อมูลผู้รับ:</b> ${name} (${phone})<br>ที่อยู่: ${address}
             </div>
