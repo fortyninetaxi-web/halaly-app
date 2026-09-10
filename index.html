@@ -743,31 +743,48 @@
     }
 
     function checkoutOrder() {
-        if (cart.length === 0) {
-            showToast('กรุณาเลือกสินค้าลงตะกร้าก่อนครับ');
+        // 1. เช็กว่ามีสินค้าในตะกร้าหรือไม่
+        if (!cart || cart.length === 0) {
+            showToast('⚠️ กรุณาเลือกสินค้าลงตะกร้าก่อนครับ');
             return;
         }
 
-        const name = document.getElementById('cust-name').value.trim();
-        const phone = document.getElementById('cust-phone').value.trim();
-        const address = document.getElementById('cust-address').value.trim();
+        // 2. ดึงค่าจากฟอร์ม
+        const nameEl = document.getElementById('cust-name');
+        const phoneEl = document.getElementById('cust-phone');
+        const addressEl = document.getElementById('cust-address');
 
+        const name = nameEl ? nameEl.value.trim() : '';
+        const phone = phoneEl ? phoneEl.value.trim() : '';
+        const address = addressEl ? addressEl.value.trim() : '';
+
+        // 3. เช็กว่ากรอกข้อมูลครบถ้วนหรือไม่
         if (!name || !phone || !address) {
-            showToast('กรุณากรอกข้อมูลจัดส่งให้ครบถ้วน');
+            showToast('⚠️ กรุณากรอก ชื่อ เบอร์โทร และที่อยู่ ให้ครบถ้วนครับ');
             switchPage('cart-view');
             return;
         }
 
         saveAddressInfo(name, phone, address);
 
+        // 4. คำนวณราคา
         const foodTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const deliveryFee = selectedRestaurant ? Number(selectedRestaurant.deliveryFee) : 0;
+        const deliveryFee = selectedRestaurant ? Number(selectedRestaurant.deliveryFee || 0) : 0;
         const netTotal = Math.max(0, foodTotal + deliveryFee - appliedDiscount);
 
         let itemsHtml = cart.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>${i.name} x${i.qty}</span><b>฿${i.price * i.qty}</b></div>`).join('');
 
-        document.getElementById('modal-summary-content').innerHTML = `
-            <div style="font-weight:600; color:var(--text-main); margin-bottom:6px;">ร้าน: ${selectedRestaurant.name}</div>
+        const modalContent = document.getElementById('modal-summary-content');
+        const confirmModal = document.getElementById('confirm-modal');
+
+        if (!modalContent || !confirmModal) {
+            showToast('❌ ไม่พบส่วนแสดงผล Modal (เช็ก ID confirm-modal ใน HTML)');
+            return;
+        }
+
+        // 5. แสดงผล Modal
+        modalContent.innerHTML = `
+            <div style="font-weight:600; color:var(--text-main); margin-bottom:6px;">ร้าน: ${selectedRestaurant ? selectedRestaurant.name : 'ร้านอาหารฮาลาล'}</div>
             <div style="background:#F9F9F9; padding:8px; border-radius:8px; margin-bottom:8px;">${itemsHtml}</div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>ค่าอาหาร:</span><span>฿${foodTotal}</span></div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>ค่าจัดส่ง:</span><span>฿${deliveryFee}</span></div>
@@ -776,7 +793,6 @@
                 <span>ยอดชำระสุทธิ:</span><span>฿${netTotal}</span>
             </div>
 
-            <!-- 💳 แสดง QR Code PromptPay -->
             <div style="margin-top:12px; background:#F0FDF4; border:1px solid #BBF7D0; border-radius:12px; padding:12px; text-align:center;">
                 <div style="font-size:0.85rem; font-weight:700; color:var(--primary-dark); margin-bottom:4px;">
                     <i class="fa-solid fa-qrcode"></i> สแกนชำระเงินผ่าน PromptPay
@@ -785,8 +801,7 @@
                 
                 <img src="${promptpayQrImgUrl}" alt="PromptPay QR Code" style="width:180px; height:180px; object-fit:contain; border-radius:8px; border:2px solid #FFF; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
                 
-                <div style="font-size:0.8rem; font-weight:600; color:#333; margin-top:6px;">${promptpayAccountName}</div>
-                <div style="font-size:0.85rem; font-weight:700; color:var(--primary);">${promptpayNumber}</div>
+                <div style="font-size:0.8rem; font-weight:600; color:#00B14F; margin-top:6px;">${promptpayAccountName}</div>
             </div>
 
             <div style="margin-top:10px; font-size:0.75rem; color:#555; background:#E8F5E9; padding:8px; border-radius:6px;">
@@ -794,7 +809,7 @@
             </div>
         `;
 
-        document.getElementById('confirm-modal').style.display = 'flex';
+        confirmModal.style.display = 'flex';
     }
 
     function closeConfirmModal() {
