@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HALALY Super App</title>
-    <!-- Fonts & FontAwesome -->
+    <title>HALALY Delivery</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- LINE LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     
     <style>
         :root {
-            --primary: #00B14F;
-            --primary-dark: #008D3F;
-            --secondary: #FF5722;
-            --accent: #FFC107;
-            --bg-gray: #F5F6F8;
+            /* ธีมสีใหม่: สีส้ม + สีกรมท่า/น้ำเงิน */
+            --primary: #FF5722;         /* สีส้มหลัก */
+            --primary-dark: #E64A19;    /* สีส้มเข้ม */
+            --navy: #1A237E;           /* สีกรมท่า/น้ำเงิน */
+            --navy-light: #283593;     /* สีกรมท่าสว่าง */
+            --bg-gray: #F4F5F8;
             --card-white: #FFFFFF;
-            --text-main: #212121;
-            --text-sub: #757575;
+            --text-main: #1A1A1A;
+            --text-sub: #555555;
             --radius-lg: 16px;
             --radius-md: 12px;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         * {
@@ -39,6 +38,7 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
+            font-size: 16px; /* ตัวอักษรใหญ่พอดี อ่านง่าย */
         }
 
         .app-container {
@@ -47,7 +47,7 @@
             background-color: var(--bg-gray);
             position: relative;
             padding-bottom: 110px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
         /* Toast Alert */
@@ -56,59 +56,76 @@
             top: -100px;
             left: 50%;
             transform: translateX(-50%);
-            background: #323232;
+            background: #212121;
             color: white;
-            padding: 14px 20px;
+            padding: 14px 24px;
             border-radius: 30px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             z-index: 10000;
             transition: top 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             width: 85%;
             max-width: 380px;
             justify-content: center;
         }
-
         .custom-toast.show { top: 30px; }
-        .custom-toast i { color: #00E676; font-size: 1.2rem; }
+        .custom-toast i { color: var(--primary); font-size: 1.3rem; }
 
-        /* Header */
+        /* Header มีโลโก้บนสุด + ปุ่มสลับภาษา TH/EN */
         .header-top {
-            background: linear-gradient(135deg, var(--primary) 0%, #00C853 100%);
-            padding: 16px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            padding: 14px 18px;
             color: white;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
             position: sticky;
             top: 0;
             z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
-        .location-btn {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(8px);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
+        .app-logo {
             display: flex;
             align-items: center;
-            gap: 6px;
-            color: white;
-            border: none;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #FFFFFF;
         }
 
-        /* Views */
+        .app-logo i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .lang-switch-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Views Body */
         .page-view {
             display: none;
             padding: 16px;
             animation: fadeIn 0.25s ease-in-out;
         }
-
         .page-view.active { display: block; }
 
         @keyframes fadeIn {
@@ -116,162 +133,202 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Services Grid */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .service-card {
-            background: var(--card-white);
-            border-radius: var(--radius-lg);
-            padding: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow-sm);
-            cursor: pointer;
-        }
-
-        .service-info h3 { font-size: 1.05rem; font-weight: 600; }
-        .service-info p { font-size: 0.75rem; color: var(--text-sub); }
-        .badge-tag {
-            display: inline-block;
-            background: #FFEBEE;
-            color: var(--secondary);
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 6px;
-            margin-top: 4px;
-        }
-        .service-icon { font-size: 2rem; color: var(--primary); }
-
         .section-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        /* Restaurant List UI */
+        /* Banner หน้าแรก */
+        .home-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+        .home-banner h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+        .home-banner p { font-size: 0.95rem; opacity: 0.9; }
+
+        /* Category Filter Tabs (แบ่งหมวดหมู่อย่างชัดเจน) */
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+        .category-tabs::-webkit-scrollbar { display: none; }
+
+        .cat-chip {
+            background: white;
+            color: var(--text-sub);
+            border: 1px solid #E0E0E0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cat-chip.active {
+            background: var(--navy);
+            color: white;
+            border-color: var(--navy);
+        }
+
+        /* Restaurant Card & Closed Status */
         .restaurant-card {
             background: white;
             border-radius: var(--radius-md);
             overflow: hidden;
             box-shadow: var(--shadow-sm);
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             cursor: pointer;
+            position: relative;
+            border: 1px solid #E0E0E0;
         }
 
-        .restaurant-img { width: 100%; height: 140px; object-fit: cover; }
-        .restaurant-info { padding: 12px; }
-        .restaurant-name { font-size: 1.05rem; font-weight: 700; }
-        .restaurant-meta { display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-sub); margin-top: 4px; }
+        .restaurant-card.closed {
+            filter: grayscale(0.85);
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
 
-        /* Food Grid */
-        .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .food-card {
+        .closed-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #D32F2F;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+
+        .restaurant-img { width: 100%; height: 150px; object-fit: cover; }
+        .restaurant-info { padding: 14px; }
+        .restaurant-name { font-size: 1.15rem; font-weight: 700; color: var(--navy); }
+        .restaurant-meta { display: flex; gap: 14px; font-size: 0.9rem; color: var(--text-sub); margin-top: 6px; }
+
+        /* Food List (รูปภาพด้านซ้าย + เนื้อหาคำบรรยายด้านขวา) */
+        .food-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .food-item-card {
             background: white;
             border-radius: var(--radius-md);
-            overflow: hidden;
+            padding: 12px;
             box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            border: 1px solid #EEEEEE;
+        }
+
+        .food-item-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #EEE;
+        }
+
+        .food-item-details {
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
-        .food-img { width: 100%; height: 110px; object-fit: cover; background-color: #EEE; }
-        .food-details { padding: 10px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
-        .food-title { font-size: 0.95rem; font-weight: 600; }
-        .food-price { color: var(--primary); font-weight: 700; font-size: 1rem; margin-top: 4px; }
+
+        .food-item-title { font-size: 1.05rem; font-weight: 700; color: var(--navy); }
+        .food-item-desc { font-size: 0.85rem; color: var(--text-sub); margin-top: 2px; line-height: 1.3; }
+        .food-item-price { color: var(--primary); font-weight: 700; font-size: 1.1rem; margin-top: 6px; }
 
         .add-btn {
-            width: 100%;
             background: var(--primary);
             color: white;
             border: none;
-            padding: 8px;
+            padding: 8px 14px;
             border-radius: 8px;
-            margin-top: 8px;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
+            align-self: flex-start;
+            margin-top: 8px;
         }
 
         /* Form UI */
         .box-card {
             background: white;
-            padding: 14px;
+            padding: 16px;
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-sm);
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            border: 1px solid #EAEAEA;
         }
 
-        .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-sub); margin-bottom: 4px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
         .form-input {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #E0E0E0;
+            padding: 12px;
+            border: 1px solid #CCC;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             outline: none;
         }
         .form-input:focus { border-color: var(--primary); }
 
-        .payment-banner {
-            background: #E8F5E9;
-            border: 1px solid var(--primary);
-            border-radius: 8px;
-            padding: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--primary-dark);
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .coupon-box { display: flex; gap: 8px; margin-top: 6px; }
-        .coupon-btn {
-            background: var(--text-main);
+        .save-addr-btn {
+            width: 100%;
+            background: var(--navy);
             color: white;
             border: none;
-            padding: 0 16px;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 0.85rem;
             font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
+            margin-top: 6px;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             color: var(--text-sub);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         .summary-row.total {
-            font-size: 1.05rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary);
             border-top: 1px dashed #DDD;
-            padding-top: 8px;
-            margin-top: 6px;
+            padding-top: 10px;
+            margin-top: 8px;
         }
 
         /* Cart Floating Bar & Items */
         .cart-bar {
             position: fixed;
-            bottom: 60px;
+            bottom: 65px;
             width: 100%;
             max-width: 480px;
-            background: white;
-            padding: 12px 16px;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+            background: var(--navy);
+            color: white;
+            padding: 12px 18px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -281,12 +338,12 @@
         }
 
         .cart-badge {
-            background: var(--secondary);
+            background: var(--primary);
             color: white;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -297,27 +354,28 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 22px;
             border-radius: 20px;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.95rem;
             cursor: pointer;
         }
 
         .cart-item {
             background: white;
             border-radius: var(--radius-md);
-            padding: 12px;
-            margin-bottom: 8px;
+            padding: 14px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow-sm);
         }
 
-        .qty-control { display: flex; align-items: center; gap: 10px; }
+        .qty-control { display: flex; align-items: center; gap: 12px; }
         .qty-btn {
-            width: 28px; height: 28px; border-radius: 50%;
-            border: 1px solid #DDD; background: white; font-weight: bold; cursor: pointer;
+            width: 32px; height: 32px; border-radius: 50%;
+            border: 1px solid #DDD; background: white; font-weight: bold; cursor: pointer; font-size: 1.1rem;
         }
 
         /* Bottom Nav */
@@ -329,7 +387,7 @@
             background: white;
             display: flex;
             justify-content: space-around;
-            padding: 8px 0 12px 0;
+            padding: 10px 0;
             border-top: 1px solid #EEEEEE;
             z-index: 1000;
         }
@@ -339,217 +397,224 @@
             flex-direction: column;
             align-items: center;
             color: var(--text-sub);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             border: none;
             background: none;
             cursor: pointer;
-            width: 25%;
+            width: 33%;
         }
 
-        .nav-item.active { color: var(--primary); font-weight: 600; }
+        .nav-item.active { color: var(--primary); font-weight: 700; }
+        .nav-item i { font-size: 1.3rem; margin-bottom: 2px; }
     </style>
 </head>
 <body>
 
 <div id="toast-msg" class="custom-toast">
     <i class="fa-solid fa-circle-check"></i>
-    <span id="toast-text">ส่งออเดอร์เรียบร้อยแล้ว</span>
+    <span id="toast-text">ข้อความ</span>
 </div>
 
 <div class="app-container">
-    <!-- Header -->
     <div class="header-top">
-        <button class="location-btn">
-            <i class="fa-solid fa-location-dot"></i>
-            <span id="user-display-name">ยินดีต้อนรับสู่ HALALY</span>
+        <div class="app-logo">
+            <i class="fa-solid fa-utensils"></i>
+            <span>HALALY Delivery</span>
+        </div>
+        <button class="lang-switch-btn" onclick="toggleLanguage()">
+            <i class="fa-solid fa-globe"></i>
+            <span id="lang-btn-text">EN</span>
         </button>
     </div>
 
-    <!-- HOME VIEW -->
     <div id="home-view" class="page-view active">
-        <div class="services-grid">
-            <div class="service-card" onclick="switchPage('restaurant-view')">
-                <div class="service-info">
-                    <h3>สั่งอาหาร</h3>
-                    <p>ฮาลาลอร่อยส่งไว</p>
-                    <span class="badge-tag">โค้ดลด ฿10*</span>
-                </div>
-                <div class="service-icon"><i class="fa-solid fa-utensils"></i></div>
-            </div>
-
-            <div class="service-card">
-                <div class="service-info">
-                    <h3>สั่งของ</h3>
-                    <p>ของสด ครบครัน</p>
-                    <span class="badge-tag">เร็วๆ นี้</span>
-                </div>
-                <div class="service-icon"><i class="fa-solid fa-basket-shopping"></i></div>
-            </div>
-
-            <div class="service-card">
-                <div class="service-info">
-                    <h3>เรียกรถ</h3>
-                    <p>เดินทางปลอดภัย</p>
-                    <span class="badge-tag">เร็วๆ นี้</span>
-                </div>
-                <div class="service-icon"><i class="fa-solid fa-motorcycle"></i></div>
-            </div>
-
-            <div class="service-card">
-                <div class="service-info">
-                    <h3>เมสเซนเจอร์</h3>
-                    <p>ส่งพัสดุด่วน</p>
-                    <span class="badge-tag">เร็วๆ นี้</span>
-                </div>
-                <div class="service-icon"><i class="fa-solid fa-box"></i></div>
-            </div>
+        <div class="home-banner">
+            <h2 id="txt-home-title">อาหารฮาลาลอร่อย ส่งตรงถึงคุณ</h2>
+            <p id="txt-home-sub">สะอาด ฮาลาล 100% บริการว่องไว</p>
         </div>
+
+        <div class="section-title">
+            <span id="txt-home-recommend"><i class="fa-solid fa-fire" style="color:var(--primary);"></i> ร้านค้าแนะนำ</span>
+        </div>
+        <div id="home-restaurant-list"></div>
     </div>
 
-    <!-- RESTAURANT LIST VIEW -->
     <div id="restaurant-view" class="page-view">
         <div class="section-title">
-            <span><i class="fa-solid fa-store" style="color: var(--primary);"></i> เลือกร้านอาหารฮาลาล</span>
-            <button onclick="switchPage('home-view')" style="border:none; background:none; color:var(--primary); font-size:0.85rem; font-weight:600;">ย้อนกลับ</button>
+            <span id="txt-tab-store-title"><i class="fa-solid fa-store"></i> ร้านค้าทั้งหมด</span>
         </div>
+
+        <div class="category-tabs" id="category-tabs-container">
+            <button class="cat-chip active" onclick="filterCategory('all', this)" id="cat-all">ทั้งหมด / All</button>
+            <button class="cat-chip" onclick="filterCategory('rice', this)" id="cat-rice">อาหารตามสั่ง / Rice</button>
+            <button class="cat-chip" onclick="filterCategory('noodle', this)" id="cat-noodle">ก๋วยเตี๋ยว / Noodle</button>
+            <button class="cat-chip" onclick="filterCategory('drink', this)" id="cat-drink">เครื่องดื่ม / Drink</button>
+        </div>
+
         <div id="restaurant-list"></div>
     </div>
 
-    <!-- FOOD MENU VIEW -->
     <div id="food-view" class="page-view">
         <div class="section-title">
-            <span id="current-restaurant-title"><i class="fa-solid fa-fire" style="color: var(--secondary);"></i> เมนูอาหาร</span>
-            <button onclick="switchPage('restaurant-view')" style="border:none; background:none; color:var(--primary); font-size:0.85rem; font-weight:600;">เปลี่ยนร้าน</button>
+            <span id="current-restaurant-title">เมนูอาหาร</span>
+            <button onclick="switchPage('restaurant-view')" style="border:none; background:none; color:var(--primary); font-size:0.95rem; font-weight:700;" id="btn-back-stores">← เปลี่ยนร้าน</button>
         </div>
-        <div id="food-grid" class="food-grid"></div>
+        
+        <div id="food-list" class="food-list"></div>
     </div>
 
-    <!-- CART VIEW -->
     <div id="cart-view" class="page-view">
         <div class="section-title">
-            <span><i class="fa-solid fa-cart-shopping"></i> ตะกร้าสินค้าของคุณ</span>
-            <button onclick="switchPage('food-view')" style="border:none; background:none; color:var(--primary); font-size:0.85rem; font-weight:600;">+ เพิ่มรายการ</button>
+            <span id="txt-cart-title"><i class="fa-solid fa-cart-shopping"></i> ตะกร้าสินค้า</span>
+            <button onclick="switchPage('food-view')" style="border:none; background:none; color:var(--primary); font-size:0.95rem; font-weight:700;" id="btn-add-more">+ เพิ่มรายการ</button>
         </div>
 
-        <!-- ฟอร์มกรอกที่อยู่จัดส่ง -->
         <div class="box-card">
-            <div style="font-weight:600; font-size:0.95rem; margin-bottom:10px; color:var(--primary);">
-                <i class="fa-solid fa-truck-fast"></i> ข้อมูลการจัดส่ง
+            <div style="font-weight:700; font-size:1.05rem; margin-bottom:12px; color:var(--navy);" id="txt-delivery-info-header">
+                <i class="fa-solid fa-truck-fast" style="color:var(--primary);"></i> ข้อมูลการจัดส่ง
             </div>
             <div class="form-group">
-                <label>ชื่อผู้รับ</label>
+                <label id="lbl-cust-name">ชื่อผู้รับ</label>
                 <input type="text" id="cust-name" class="form-input" placeholder="กรอกชื่อ-นามสกุล">
             </div>
             <div class="form-group">
-                <label>เบอร์โทรศัพท์</label>
+                <label id="lbl-cust-phone">เบอร์โทรศัพท์</label>
                 <input type="tel" id="cust-phone" class="form-input" placeholder="08X-XXX-XXXX">
             </div>
             <div class="form-group">
-                <label>ที่อยู่จัดส่ง / จุดสังเกต</label>
-                <textarea id="cust-address" class="form-input" rows="2" style="resize:none;" placeholder="บ้านเลขที่, ถนน, ซอย, จุดสังเกต"></textarea>
+                <label id="lbl-cust-address">ที่อยู่จัดส่ง / จุดสังเกต</label>
+                <textarea id="cust-address" class="form-input" rows="2" style="resize:none;" placeholder="บ้านเลขที่, ซอย, ถนน, จุดสังเกต"></textarea>
             </div>
-        </div>
-
-        <!-- วิธีชำระเงิน -->
-        <div class="box-card">
-            <div style="font-weight:600; font-size:0.85rem; color:var(--text-sub); margin-bottom:8px;">
-                <i class="fa-solid fa-wallet" style="color:var(--primary);"></i> วิธีการชำระเงิน
-            </div>
-            <div class="payment-banner">
-                <i class="fa-solid fa-qrcode" style="font-size:1.8rem;"></i>
-                <div>
-                    <div>สแกน QR Code (PromptPay บัญชีกลาง HALALY)</div>
-                    <div style="font-size:0.75rem; font-weight:400; color:var(--text-sub);">ชำระผ่านแอป 100% ปลอดภัย จัดส่งรวดเร็ว</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ส่วนลด & คูปอง -->
-        <div class="box-card">
-            <div style="font-weight:600; font-size:0.85rem; color:var(--text-sub); margin-bottom:6px;">
-                <i class="fa-solid fa-ticket" style="color:var(--secondary);"></i> โค้ดส่วนลด (พิมพ์ HALALY10)
-            </div>
-            <div class="coupon-box">
-                <input type="text" id="coupon-code" class="form-input" placeholder="ใส่โค้ดส่วนลด" style="text-transform:uppercase;">
-                <button class="coupon-btn" onclick="applyCoupon()">ใช้โค้ด</button>
-            </div>
+            <button class="save-addr-btn" onclick="saveAddressAction()" id="btn-save-addr">
+                <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูลจัดส่ง
+            </button>
         </div>
 
         <div id="cart-items-list"></div>
 
-        <!-- สรุปราคารวม -->
-        <div id="price-summary-box" class="box-card" style="margin-top:12px; display:none;">
-            <div class="summary-row"><span>ค่าอาหาร</span><span id="sum-food">฿0</span></div>
-            <div class="summary-row"><span>ค่าจัดส่ง</span><span id="sum-delivery">฿0</span></div>
-            <div class="summary-row" id="discount-row" style="display:none; color:var(--secondary);">
-                <span>ส่วนลด (<span id="discount-label"></span>)</span>
-                <span id="sum-discount">-฿0</span>
-            </div>
-            <div class="summary-row total"><span>ราคาสุทธิ</span><span id="sum-net">฿0</span></div>
-            <button class="add-btn" style="margin-top:12px; padding:12px; font-size:1rem;" onclick="checkoutOrder()">ตรวจสอบและสั่งซื้อ</button>
+        <div id="price-summary-box" class="box-card" style="margin-top:14px; display:none;">
+            <div class="summary-row"><span id="txt-sum-food">ค่าอาหาร</span><span id="sum-food">฿0</span></div>
+            <div class="summary-row"><span id="txt-sum-delivery">ค่าจัดส่ง</span><span id="sum-delivery">฿0</span></div>
+            <div class="summary-row total"><span id="txt-sum-net">ราคาสุทธิ</span><span id="sum-net">฿0</span></div>
+            <button class="checkout-btn" style="width:100%; margin-top:14px; padding:14px; font-size:1.1rem; border-radius:10px;" onclick="checkoutOrder()" id="btn-checkout-order">ตรวจสอบและสั่งซื้อ</button>
         </div>
     </div>
 
-    <!-- CART FLOATING BAR -->
     <div id="cart-bar" class="cart-bar" style="display: none;">
         <div style="display:flex; align-items:center; gap:12px;">
             <div id="cart-count" class="cart-badge">0</div>
             <div>
-                <div style="font-size: 0.75rem; color: var(--text-sub);">ราคารวม</div>
-                <div id="cart-total" style="font-weight: 700; color: var(--primary);">฿0</div>
+                <div style="font-size: 0.8rem; opacity:0.8;" id="txt-float-total">ราคารวม</div>
+                <div id="cart-total" style="font-weight: 700; font-size:1.1rem; color:var(--primary);">฿0</div>
             </div>
         </div>
-        <button class="checkout-btn" onclick="switchPage('cart-view')">ดูตะกร้าสินค้า</button>
+        <button class="checkout-btn" onclick="switchPage('cart-view')" id="btn-view-cart">ดูตะกร้าสินค้า</button>
     </div>
 
-    <!-- Bottom Nav -->
     <div class="bottom-nav">
         <button id="nav-home" class="nav-item active" onclick="switchPage('home-view')">
             <i class="fa-solid fa-house"></i>
-            <span>หน้าแรก</span>
+            <span id="nav-lbl-home">หน้าแรก</span>
         </button>
         <button id="nav-restaurant" class="nav-item" onclick="switchPage('restaurant-view')">
             <i class="fa-solid fa-store"></i>
-            <span>ร้านค้า</span>
+            <span id="nav-lbl-store">ร้านค้า</span>
         </button>
         <button id="nav-cart" class="nav-item" onclick="switchPage('cart-view')">
             <i class="fa-solid fa-cart-shopping"></i>
-            <span>ตะกร้า</span>
-        </button>
-        <button class="nav-item" onclick="checkoutOrder()">
-            <i class="fa-solid fa-paper-plane"></i>
-            <span>ส่งออเดอร์</span>
+            <span id="nav-lbl-cart">ตะกร้า</span>
         </button>
     </div>
 
-    <!-- Modal สรุปคำสั่งซื้อพร้อม QR Code PromptPay -->
-    <div id="confirm-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
-        <div style="background:white; width:90%; max-width:400px; border-radius:16px; padding:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2); animation: fadeIn 0.2s;">
-            <h3 style="color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-                <i class="fa-solid fa-file-invoice"></i> สรุปรายการ & ชำระเงิน
+    <div id="confirm-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:white; width:90%; max-width:420px; border-radius:18px; padding:22px; box-shadow:0 10px 25px rgba(0,0,0,0.3); animation: fadeIn 0.2s;">
+            <h3 style="color:var(--navy); margin-bottom:12px; display:flex; align-items:center; gap:8px;" id="modal-title">
+                <i class="fa-solid fa-file-invoice" style="color:var(--primary);"></i> สรุปรายการ & ชำระเงิน
             </h3>
-            <div id="modal-summary-content" style="font-size:0.85rem; color:#444; max-height:360px; overflow-y:auto; margin-bottom:12px; border-bottom:1px solid #EEE; padding-bottom:10px;"></div>
+            <div id="modal-summary-content" style="font-size:0.95rem; color:#333; max-height:380px; overflow-y:auto; margin-bottom:14px; border-bottom:1px solid #EEE; padding-bottom:12px;"></div>
             <div style="display:flex; gap:10px;">
-                <button onclick="closeConfirmModal()" style="flex:1; padding:10px; border:1px solid #CCC; background:white; border-radius:8px; font-weight:600; cursor:pointer;">แก้ไข</button>
-                <button onclick="processFinalCheckout()" style="flex:2; padding:10px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:600; cursor:pointer;">โอนเงินแล้ว แจ้งออเดอร์ 🚀</button>
+                <button onclick="closeConfirmModal()" style="flex:1; padding:12px; border:1px solid #CCC; background:white; border-radius:10px; font-weight:600; cursor:pointer;" id="btn-modal-edit">แก้ไข</button>
+                <button onclick="processFinalCheckout()" style="flex:2; padding:12px; border:none; background:var(--primary); color:white; border-radius:10px; font-weight:700; cursor:pointer;" id="btn-modal-confirm">ชำระเงินเรียบร้อย 🚀</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-  const myLiffId = "2011404606-uxwIjCJT";
+    const myLiffId = "2011404606-uxwIjCJT";
     const googleSheetApiUrl = "https://script.google.com/macros/s/AKfycbxJHFI2GoLOKJRNBmEth68ZZj1mzxiEpXOyGicEoGLJyWXmplzb4G3kxR-fm75k8eCZKQ/exec"; 
 
-    // 💳 ข้อมูลรับชำระเงิน PromptPay (ซ่อนเบอร์/ชื่อส่วนตัวบนหน้าแอป)
-    const promptpayQrImgUrl = "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400"; // 🔴 นำ URL รูป QR Code ของคุณมาวางตรงนี้
-    const promptpayAccountName = "HALALY Payment Account"; // 🔴 ชื่อแบรนด์รับชำระเงิน
+    // ข้อมูลรับชำระเงิน
+    const promptpayQrImgUrl = "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400";
+    const promptpayAccountName = "HALALY Payment Account";
 
+    let currentLang = 'TH'; // ภาษาหลัก TH
     let cart = [];
     let restaurantsData = [];
     let selectedRestaurant = null;
-    let appliedDiscount = 0;
-    let discountCodeName = "";
+    let selectedCategory = 'all';
+
+    // คลังข้อความ 2 ภาษา
+    const i18n = {
+        TH: {
+            homeTitle: "อาหารฮาลาลอร่อย ส่งตรงถึงคุณ",
+            homeSub: "สะอาด ฮาลาล 100% บริการว่องไว",
+            homeRecommend: "ร้านค้าแนะนำ",
+            tabStoreTitle: "ร้านค้าทั้งหมด",
+            backStores: "← เปลี่ยนร้าน",
+            cartTitle: "ตะกร้าสินค้า",
+            addMore: "+ เพิ่มรายการ",
+            deliveryInfoHeader: "ข้อมูลการจัดส่ง",
+            lblName: "ชื่อผู้รับ",
+            lblPhone: "เบอร์โทรศัพท์",
+            lblAddress: "ที่อยู่จัดส่ง / จุดสังเกต",
+            btnSaveAddr: "บันทึกข้อมูลจัดส่ง",
+            sumFood: "ค่าอาหาร",
+            sumDelivery: "ค่าจัดส่ง",
+            sumNet: "ราคาสุทธิ",
+            btnCheckout: "ตรวจสอบและสั่งซื้อ",
+            floatTotal: "ราคารวม",
+            btnViewCart: "ดูตะกร้าสินค้า",
+            navHome: "หน้าแรก",
+            navStore: "ร้านค้า",
+            navCart: "ตะกร้า",
+            closedTag: "ร้านปิดอยู่",
+            modalTitle: "สรุปรายการ & ชำระเงิน",
+            modalEdit: "แก้ไข",
+            modalConfirm: "ชำระเงินเรียบร้อย 🚀",
+            successToast: "บันทึกข้อมูลจัดส่งเรียบร้อยแล้ว",
+            orderSuccessMsg: "เตรียมรอรับอาหาร... ขอบคุณที่ใช้บริการครับ! 🛵💨"
+        },
+        EN: {
+            homeTitle: "Delicious Halal Food Delivered",
+            homeSub: "Clean, 100% Halal, Fast Delivery",
+            homeRecommend: "Recommended Stores",
+            tabStoreTitle: "All Restaurants",
+            backStores: "← Change Store",
+            cartTitle: "Shopping Cart",
+            addMore: "+ Add Items",
+            deliveryInfoHeader: "Delivery Information",
+            lblName: "Recipient Name",
+            lblPhone: "Phone Number",
+            lblAddress: "Address / Landmark",
+            btnSaveAddr: "Save Delivery Info",
+            sumFood: "Food Subtotal",
+            sumDelivery: "Delivery Fee",
+            sumNet: "Net Total",
+            btnCheckout: "Checkout Order",
+            floatTotal: "Total",
+            btnViewCart: "View Cart",
+            navHome: "Home",
+            navStore: "Stores",
+            navCart: "Cart",
+            closedTag: "Closed",
+            modalTitle: "Order Summary & Payment",
+            modalEdit: "Edit",
+            modalConfirm: "Paid Successfully 🚀",
+            successToast: "Delivery info saved successfully",
+            orderSuccessMsg: "Food is being prepared... Thank you for using our service! 🛵💨"
+        }
+    };
 
     document.addEventListener('DOMContentLoaded', function () {
         loadSavedAddress();
@@ -560,7 +625,6 @@
                 .then(() => {
                     if (liff.isLoggedIn()) {
                         liff.getProfile().then(profile => {
-                            document.getElementById('user-display-name').innerText = `คุณ ${profile.displayName}`;
                             if (!document.getElementById('cust-name').value) {
                                 document.getElementById('cust-name').value = profile.displayName;
                             }
@@ -571,371 +635,28 @@
         }
     });
 
-    function fetchRestaurantsFromSheet() {
-        const container = document.getElementById('restaurant-list');
-        container.innerHTML = '<p style="text-align:center; padding:30px; color:var(--text-sub);"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>กำลังโหลดรายการร้านค้า...</p>';
-
-        fetch(googleSheetApiUrl, { redirect: 'follow' })
-            .then(res => res.json())
-            .then(data => {
-                restaurantsData = data;
-                renderRestaurants();
-            })
-            .catch(err => {
-                console.error("Error loading sheet data:", err);
-                container.innerHTML = '<p style="text-align:center; padding:20px; color:red;">เกิดข้อผิดพลาดในการโหลดข้อมูลร้านค้า</p>';
-                showToast('ไม่สามารถดึงข้อมูลร้านค้าได้');
-            });
-    }
-
-    function loadSavedAddress() {
-        const savedName = localStorage.getItem('halaly_cust_name');
-        const savedPhone = localStorage.getItem('halaly_cust_phone');
-        const savedAddress = localStorage.getItem('halaly_cust_address');
-
-        if (savedName) document.getElementById('cust-name').value = savedName;
-        if (savedPhone) document.getElementById('cust-phone').value = savedPhone;
-        if (savedAddress) document.getElementById('cust-address').value = savedAddress;
-    }
-
-    function saveAddressInfo(name, phone, address) {
-        localStorage.setItem('halaly_cust_name', name);
-        localStorage.setItem('halaly_cust_phone', phone);
-        localStorage.setItem('halaly_cust_address', address);
-    }
-
-    function showToast(message) {
-        const toast = document.getElementById('toast-msg');
-        document.getElementById('toast-text').innerText = message;
-        toast.classList.add('show');
-        setTimeout(() => { toast.classList.remove('show'); }, 1800);
-    }
-
-    function renderRestaurants() {
-        const container = document.getElementById('restaurant-list');
-        if (!restaurantsData || restaurantsData.length === 0) {
-            container.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-sub);">ยังไม่มีร้านค้าในระบบ</p>';
-            return;
-        }
-
-        container.innerHTML = restaurantsData.map(r => `
-            <div class="restaurant-card" onclick="selectRestaurantById(${r.id})">
-                <img src="${r.img}" class="restaurant-img" alt="${r.name}">
-                <div class="restaurant-info">
-                    <div class="restaurant-name">${r.name}</div>
-                    <div class="restaurant-meta">
-                        <span><i class="fa-solid fa-star" style="color:var(--accent);"></i> ${r.rating}</span>
-                        <span><i class="fa-solid fa-clock"></i> ${r.time}</span>
-                        <span><i class="fa-solid fa-motorcycle"></i> ค่าส่ง ฿${r.deliveryFee}</span>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function selectRestaurantById(id) {
-        selectedRestaurant = restaurantsData.find(r => Number(r.id) === Number(id));
-        document.getElementById('current-restaurant-title').innerText = selectedRestaurant.name;
+    // ระบบสลับภาษา TH / EN
+    function toggleLanguage() {
+        currentLang = currentLang === 'TH' ? 'EN' : 'TH';
+        document.getElementById('lang-btn-text').innerText = currentLang === 'TH' ? 'EN' : 'TH';
         
-        const grid = document.getElementById('food-grid');
-        grid.innerHTML = selectedRestaurant.menus.map(m => `
-            <div class="food-card">
-                <img src="${m.img}" class="food-img" alt="${m.name}">
-                <div class="food-details">
-                    <div>
-                        <div class="food-title">${m.name}</div>
-                        <div class="food-price">฿${m.price}</div>
-                    </div>
-                    <button class="add-btn" onclick="addToCart('${m.name}', ${m.price})">+ เพิ่มลงตะกร้า</button>
-                </div>
-            </div>
-        `).join('');
-
-        switchPage('food-view');
-    }
-
-    function addToCart(name, price) {
-        const item = cart.find(i => i.name === name);
-        if (item) { item.qty++; } else { cart.push({ name, price, qty: 1 }); }
-        updateCartUI();
-        showToast('เพิ่มลงตะกร้าแล้ว');
-    }
-
-    function changeQty(name, amount) {
-        const item = cart.find(i => i.name === name);
-        if (item) {
-            item.qty += amount;
-            if (item.qty <= 0) cart = cart.filter(i => i.name !== name);
-        }
-        updateCartUI();
-    }
-
-    function applyCoupon() {
-        const code = document.getElementById('coupon-code').value.trim().toUpperCase();
-        if (code === "HALALY10") {
-            appliedDiscount = 10;
-            discountCodeName = "HALALY10";
-            showToast('ใช้โค้ดส่วนลด ฿10 สำเร็จ!');
-        } else {
-            appliedDiscount = 0;
-            discountCodeName = "";
-            showToast('โค้ดส่วนลดไม่ถูกต้อง');
-        }
-        updateCartUI();
-    }
-
-    function updateCartUI() {
-        const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-        const foodTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const deliveryFee = selectedRestaurant ? Number(selectedRestaurant.deliveryFee) : 0;
-        const netTotal = Math.max(0, foodTotal + deliveryFee - appliedDiscount);
-
-        document.getElementById('cart-count').innerText = totalItems;
-        document.getElementById('cart-total').innerText = `฿${netTotal}`;
-        document.getElementById('cart-bar').style.display = totalItems > 0 ? 'flex' : 'none';
-
-        const cartList = document.getElementById('cart-items-list');
-        const summaryBox = document.getElementById('price-summary-box');
-
-        if (cart.length === 0) {
-            cartList.innerHTML = '<p style="text-align:center; color:var(--text-sub); margin-top:20px;">ไม่มีสินค้าในตะกร้า</p>';
-            summaryBox.style.display = 'none';
-            return;
-        }
-
-        cartList.innerHTML = cart.map(item => `
-            <div class="cart-item">
-                <div>
-                    <div style="font-weight:600;">${item.name}</div>
-                    <div style="color:var(--primary); font-weight:700;">฿${item.price * item.qty}</div>
-                </div>
-                <div class="qty-control">
-                    <button class="qty-btn" onclick="changeQty('${item.name}', -1)">-</button>
-                    <span>${item.qty}</span>
-                    <button class="qty-btn" onclick="changeQty('${item.name}', 1)">+</button>
-                </div>
-            </div>
-        `).join('');
-
-        document.getElementById('sum-food').innerText = `฿${foodTotal}`;
-        document.getElementById('sum-delivery').innerText = `฿${deliveryFee}`;
-        if (appliedDiscount > 0) {
-            document.getElementById('discount-row').style.display = 'flex';
-            document.getElementById('discount-label').innerText = discountCodeName;
-            document.getElementById('sum-discount').innerText = `-฿${appliedDiscount}`;
-        } else {
-            document.getElementById('discount-row').style.display = 'none';
-        }
-        document.getElementById('sum-net').innerText = `฿${netTotal}`;
-        summaryBox.style.display = 'block';
-    }
-
-    function switchPage(pageId) {
-        document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-        
-        document.getElementById(pageId).classList.add('active');
-        if (pageId === 'home-view') document.getElementById('nav-home').classList.add('active');
-        if (pageId === 'restaurant-view') document.getElementById('nav-restaurant').classList.add('active');
-        if (pageId === 'cart-view') document.getElementById('nav-cart').classList.add('active');
-
-        window.scrollTo(0, 0);
-    }
-
-    function checkoutOrder() {
-        // 1. เช็กว่ามีสินค้าในตะกร้าหรือไม่
-        if (!cart || cart.length === 0) {
-            showToast('⚠️ กรุณาเลือกสินค้าลงตะกร้าก่อนครับ');
-            return;
-        }
-
-        // 2. ดึงค่าจากฟอร์ม
-        const nameEl = document.getElementById('cust-name');
-        const phoneEl = document.getElementById('cust-phone');
-        const addressEl = document.getElementById('cust-address');
-
-        const name = nameEl ? nameEl.value.trim() : '';
-        const phone = phoneEl ? phoneEl.value.trim() : '';
-        const address = addressEl ? addressEl.value.trim() : '';
-
-        // 3. เช็กว่ากรอกข้อมูลครบถ้วนหรือไม่
-        if (!name || !phone || !address) {
-            showToast('⚠️ กรุณากรอก ชื่อ เบอร์โทร และที่อยู่ ให้ครบถ้วนครับ');
-            switchPage('cart-view');
-            return;
-        }
-
-        saveAddressInfo(name, phone, address);
-
-        // 4. คำนวณราคา
-        const foodTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const deliveryFee = selectedRestaurant ? Number(selectedRestaurant.deliveryFee || 0) : 0;
-        const netTotal = Math.max(0, foodTotal + deliveryFee - appliedDiscount);
-
-        let itemsHtml = cart.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>${i.name} x${i.qty}</span><b>฿${i.price * i.qty}</b></div>`).join('');
-
-        const modalContent = document.getElementById('modal-summary-content');
-        const confirmModal = document.getElementById('confirm-modal');
-
-        if (!modalContent || !confirmModal) {
-            showToast('❌ ไม่พบส่วนแสดงผล Modal (เช็ก ID confirm-modal ใน HTML)');
-            return;
-        }
-
-        // 5. แสดงผล Modal
-        modalContent.innerHTML = `
-            <div style="font-weight:600; color:var(--text-main); margin-bottom:6px;">ร้าน: ${selectedRestaurant ? selectedRestaurant.name : 'ร้านอาหารฮาลาล'}</div>
-            <div style="background:#F9F9F9; padding:8px; border-radius:8px; margin-bottom:8px;">${itemsHtml}</div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>ค่าอาหาร:</span><span>฿${foodTotal}</span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>ค่าจัดส่ง:</span><span>฿${deliveryFee}</span></div>
-            ${appliedDiscount > 0 ? `<div style="display:flex; justify-content:space-between; color:var(--secondary); margin-bottom:2px;"><span>ส่วนลด:</span><span>-฿${appliedDiscount}</span></div>` : ''}
-            <div style="display:flex; justify-content:space-between; font-weight:700; font-size:1.1rem; color:var(--primary); margin-top:6px; border-top:1px dashed #DDD; padding-top:6px;">
-                <span>ยอดชำระสุทธิ:</span><span>฿${netTotal}</span>
-            </div>
-
-            <div style="margin-top:12px; background:#F0FDF4; border:1px solid #BBF7D0; border-radius:12px; padding:12px; text-align:center;">
-                <div style="font-size:0.85rem; font-weight:700; color:var(--primary-dark); margin-bottom:4px;">
-                    <i class="fa-solid fa-qrcode"></i> สแกนชำระเงินผ่าน PromptPay
-                </div>
-                <div style="font-size:0.75rem; color:#555; margin-bottom:8px;">สแกนจ่าย <b>฿${netTotal}</b> แล้วกดแจ้งยืนยันได้เลย</div>
-                
-                <img src="${promptpayQrImgUrl}" alt="PromptPay QR Code" style="width:180px; height:180px; object-fit:contain; border-radius:8px; border:2px solid #FFF; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-                
-                <div style="font-size:0.8rem; font-weight:600; color:#00B14F; margin-top:6px;">${promptpayAccountName}</div>
-            </div>
-
-            <div style="margin-top:10px; font-size:0.75rem; color:#555; background:#E8F5E9; padding:8px; border-radius:6px;">
-                📍 <b>ข้อมูลผู้รับ:</b> ${name} (${phone})<br>ที่อยู่: ${address}
-            </div>
-        `;
-
-        confirmModal.style.display = 'flex';
-    }
-
-    function closeConfirmModal() {
-        document.getElementById('confirm-modal').style.display = 'none';
-    }
-
-    function processFinalCheckout() {
-        closeConfirmModal();
-
-        const name = document.getElementById('cust-name').value.trim();
-        const phone = document.getElementById('cust-phone').value.trim();
-        const address = document.getElementById('cust-address').value.trim();
-
-        const foodTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const deliveryFee = selectedRestaurant ? Number(selectedRestaurant.deliveryFee) : 0;
-        const netTotal = Math.max(0, foodTotal + deliveryFee - appliedDiscount);
-
-        const itemContents = cart.map(item => ({
-            type: "box",
-            layout: "horizontal",
-            margin: "sm",
-            contents: [
-                { type: "text", text: `${item.name} (x${item.qty})`, size: "sm", flex: 3 },
-                { type: "text", text: `฿${item.price * item.qty}`, size: "sm", align: "end", flex: 1, weight: "bold" }
-            ]
-        }));
-
-        const flexReceipt = {
-            type: "flex",
-            altText: `ใบเสร็จสั่งซื้อรวม ฿${netTotal} (ชำระเงินแล้ว 🟢)`,
-            contents: {
-                type: "bubble",
-                header: {
-                    type: "box",
-                    layout: "vertical",
-                    contents: [
-                        { type: "text", text: selectedRestaurant ? selectedRestaurant.name : "HALALY FOOD", weight: "bold", color: "#00B14F", size: "sm" },
-                        { type: "text", text: "ใบเสร็จสั่งซื้อ / RECEIPT", weight: "bold", size: "xl", margin: "xs" },
-                        { type: "text", text: "ชำระเงินแล้ว 🟢", weight: "bold", size: "xs", color: "#00B14F", margin: "xs" }
-                    ]
-                },
-                body: {
-                    type: "box",
-                    layout: "vertical",
-                    contents: [
-                        { type: "separator", color: "#EEEEEE" },
-                        ...itemContents,
-                        { type: "separator", margin: "md", color: "#EEEEEE" },
-                        {
-                            type: "box",
-                            layout: "vertical",
-                            margin: "md",
-                            contents: [
-                                {
-                                    type: "box", layout: "horizontal",
-                                    contents: [
-                                        { type: "text", text: "ค่าอาหาร", size: "xs", color: "#888888" },
-                                        { type: "text", text: `฿${foodTotal}`, size: "xs", align: "end" }
-                                    ]
-                                },
-                                {
-                                    type: "box", layout: "horizontal", margin: "xs",
-                                    contents: [
-                                        { type: "text", text: "ค่าจัดส่ง", size: "xs", color: "#888888" },
-                                        { type: "text", text: `฿${deliveryFee}`, size: "xs", align: "end" }
-                                    ]
-                                },
-                                ...(appliedDiscount > 0 ? [{
-                                    type: "box", layout: "horizontal", margin: "xs",
-                                    contents: [
-                                        { type: "text", text: `ส่วนลด (${discountCodeName})`, size: "xs", color: "#FF5722" },
-                                        { type: "text", text: `-฿${appliedDiscount}`, size: "xs", align: "end", color: "#FF5722" }
-                                    ]
-                                }] : []),
-                                {
-                                    type: "box", layout: "horizontal", margin: "sm",
-                                    contents: [
-                                        { type: "text", text: "ราคาสุทธิ", size: "sm", weight: "bold" },
-                                        { type: "text", text: `฿${netTotal}`, weight: "bold", size: "lg", align: "end", color: "#00B14F" }
-                                    ]
-                                }
-                            ]
-                        },
-                        { type: "separator", margin: "md", color: "#EEEEEE" },
-                        {
-                            type: "box",
-                            layout: "vertical",
-                            margin: "md",
-                            contents: [
-                                { type: "text", text: "📍 ข้อมูลการจัดส่ง", weight: "bold", size: "xs", color: "#00B14F" },
-                                { type: "text", text: `ผู้รับ: ${name} (${phone})`, size: "xs", color: "#555555", margin: "xs", wrap: true },
-                                { type: "text", text: `ที่อยู่: ${address}`, size: "xs", color: "#555555", margin: "xs", wrap: true },
-                                { type: "text", text: "ชำระเงิน: สแกน QR PromptPay บัญชีกลาง", size: "xs", color: "#00B14F", margin: "xs", weight: "bold" }
-                            ]
-                        }
-                    ]
-                },
-                footer: {
-                    type: "box",
-                    layout: "vertical",
-                    contents: [
-                        { type: "text", text: "HALALY Delivery ขอบคุณที่ใช้บริการ! 💚", size: "xs", color: "#AAAAAA", align: "center" }
-                    ]
-                }
-            }
-        };
-
-        if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
-            liff.sendMessages([flexReceipt])
-                .then(() => {
-                    showToast('ส่งออเดอร์เรียบร้อยแล้ว');
-                    cart = [];
-                    appliedDiscount = 0;
-                    discountCodeName = "";
-                    updateCartUI();
-                    setTimeout(() => { liff.closeWindow(); }, 1000);
-                })
-                .catch((err) => {
-                    console.error("sendMessages error:", err);
-                    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่');
-                });
-        } else {
-            showToast(`สั่งซื้อรวม ฿${netTotal} เรียบร้อยแล้ว!`);
-        }
-    }
-</script>
-
-</body>
-</html>
+        const t = i18n[currentLang];
+        document.getElementById('txt-home-title').innerText = t.homeTitle;
+        document.getElementById('txt-home-sub').innerText = t.homeSub;
+        document.getElementById('txt-home-recommend').innerHTML = `<i class="fa-solid fa-fire" style="color:var(--primary);"></i> ${t.homeRecommend}`;
+        document.getElementById('txt-tab-store-title').innerHTML = `<i class="fa-solid fa-store"></i> ${t.tabStoreTitle}`;
+        document.getElementById('btn-back-stores').innerText = t.backStores;
+        document.getElementById('txt-cart-title').innerHTML = `<i class="fa-solid fa-cart-shopping"></i> ${t.cartTitle}`;
+        document.getElementById('btn-add-more').innerText = t.addMore;
+        document.getElementById('txt-delivery-info-header').innerHTML = `<i class="fa-solid fa-truck-fast" style="color:var(--primary);"></i> ${t.deliveryInfoHeader}`;
+        document.getElementById('lbl-cust-name').innerText = t.lblName;
+        document.getElementById('lbl-cust-phone').innerText = t.lblPhone;
+        document.getElementById('lbl-cust-address').innerText = t.lblAddress;
+        document.getElementById('btn-save-addr').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> ${t.btnSaveAddr}`;
+        document.getElementById('txt-sum-food').innerText = t.sumFood;
+        document.getElementById('txt-sum-delivery').innerText = t.sumDelivery;
+        document.getElementById('txt-sum-net').innerText = t.sumNet;
+        document.getElementById('btn-checkout-order').innerText = t.btnCheckout;
+        document.getElementById('txt-float-total').innerText = t.floatTotal;
+        document.getElementById('btn-view-cart').innerText = t.btnViewCart;
+        document.getElementById('nav-lbl-home').innerText = t.navHome;
